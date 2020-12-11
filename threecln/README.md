@@ -1,16 +1,31 @@
 # THREE.studies para cellista, live coder y navegador
 
-Se recomienda el uso de Firefox o Chrome / Chromium
+Primer estudio de granulación audiovisual. Traspolación de objetos que producen sonido a imagen. 
 
-## Modo remoto - transmisión de audio
+- Dos posibles escenarios: presencial o a distancia.
+- Primero resolver el modo presencial que permite hacer pruebas y ensayos. Es necesario para ambos casos
+- Primera prueba deberá contemplar la captura de un flujo estéreo para enviarlo a la escena de three.js
 
-El modo remoto implica la transmisión de audio. En un primer momento, el audio se transmite entre la/el cellista y el procesamiento con SuperCollider vía [Sonobus](https://sonobus.net/).
+Diagrama de la maqueta:
 
-Es importante que al menos una computadora deberá tener desbloqueado un puerto en el modem para la transmisión.
+![open](https://github.com/EmilioOcelotl/THREE.studies/blob/main/img/three.png)
 
-Posteriormente el audio puede ser ruteado y reenviado por medio de [Jack](https://jackaudio.org/). Una alternativa para mac es: https://github.com/ExistentialAudio/BlackHole.
+## Recursos necesarios para ejecutar la pieza
 
-La señal de audio del cello y de SuperCollider deberá mezclarse interna o externamente. Una vez que el audio ha sido mezclado, deberá enviarse al servidor personalizado que a su vez, transmitirá la mezcla al navegador.
+- Una tarjeta de audio
+- Sonobus
+- Liga al sitio "presencial" 
 
-Para realizar esta transmisión recomendamos [butt](http://danielnoethen.de/butt/). La información del servidor se compartirá vía correo electrónico durante los ensayos y el día del concierto. 
+## Pendientes
 
+- Probar sonobus en modo multicanal
+- Grabación y ruteo de audio en estéreo y multicanal por medio de html
+- Relación audiovisual
+- Control remoto de escenas 
+- Objetos sonoros y visuales
+
+## Enlaces
+
+- [Sonobus](https://sonobus.net/)
+
+- [Capture Audio and Video in HTML5](https://www.html5rocks.com/en/tutorials/getusermedia/intro/)

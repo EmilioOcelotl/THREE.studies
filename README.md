@@ -12,3 +12,8 @@ Obra realizada en el marco del programa a Agentes Culturales "Resilencia Sonora"
 
 La información técnica para la ejecución de esta pieza se encuentra en siguiente [link](https://github.com/EmilioOcelotl/THREE.studies/blob/main/threecln/README.md)
 
+# Recursos
+
+- [Sonobus](https://sonobus.net/)
+
+- [Capture Audio and Video in HTML5](https://www.html5rocks.com/en/tutorials/getusermedia/intro/)
