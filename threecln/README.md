@@ -9,10 +9,6 @@ Este proyecto es posible gracias al desarrollo tecnológico de [PiranhaLab](http
 - Primera prueba deberá contemplar la captura de un flujo estéreo para enviarlo a la escena de three.js
 - La computadora que procesa debe compartir señal de audio vía sonobus y al mismo tiempo transmitir al servidor icecast vía butt. 
 
-Diagrama de la maqueta:
-
-![open](https://github.com/EmilioOcelotl/THREE.studies/blob/main/img/three.png)
-
 ## Recursos necesarios para ejecutar la pieza
 
 - Una tarjeta de audio

@@ -33,8 +33,19 @@ function init() {
     camera.position.y = 10;
     
     scene = new THREE.Scene();
-    scene.background = new THREE.Color( 0xffffff );
-    scene.fog = new THREE.Fog( 0xffffff, 0, 750 );
+
+    // scene.background = new THREE.Color( 0xffffff );
+
+    scene.background = new THREE.CubeTextureLoader().setPath('/img/').load([
+	'px.jpg',
+	'nx.jpg',
+	'py.jpg',
+	'ny.jpg',
+	'pz.jpg',
+	'nz.jpg'
+    ]);
+
+    // scene.fog = new THREE.Fog( 0xffffff, 0, 750 );
     
     const light = new THREE.HemisphereLight( 0xeeeeff, 0x777788, 0.75 );
     light.position.set( 0.5, 1, 0.75 );
@@ -132,16 +143,20 @@ function init() {
     document.addEventListener( 'keyup', onKeyUp, false );
     
     raycaster = new THREE.Raycaster( new THREE.Vector3(), new THREE.Vector3( 0, - 1, 0 ), 0, 10 );
+
     
+
     // floor
     
-    let floorGeometry = new THREE.PlaneBufferGeometry( 2000, 2000, 100, 100 );
-    floorGeometry.rotateX( - Math.PI / 2 );
+    // let floorGeometry = new THREE.PlaneBufferGeometry( 2000, 2000, 100, 100 );
+    // floorGeometry.rotateX( - Math.PI / 2 );
     
     // vertex displacement
     
-    let position = floorGeometry.attributes.position;
-    
+    // let position = floorGeometry.attributes.position;
+
+    /*
+
     for ( let i = 0, l = position.count; i < l; i ++ ) {
 	
 	vertex.fromBufferAttribute( position, i );
@@ -172,6 +187,8 @@ function init() {
     
     const floor = new THREE.Mesh( floorGeometry, floorMaterial );
     scene.add( floor );
+
+   
     
     // objects
     
@@ -201,11 +218,59 @@ function init() {
 	
 	scene.add( box );
 	objects.push( box );
+
+    
 	
     }
+    */
+    /*
+
+    const geometry = new THREE.Geometry();
+
+    geometry.vertices.push(
+	new THREE.Vector3( -10,  10, 0 ),
+	new THREE.Vector3( -10, -10, 0 ),
+	new THREE.Vector3(  10, -10, 0 )
+    );
+
     
-    //
+    geometry.faces.push( new THREE.Face3( 0, 1, 2 ) );
+    geometry.computeBoundingSphere();
+    */
+
+    const part = []; 
     
+    for( var i = 0; i < 5000; i++){
+	
+	const geometry = new THREE.SphereGeometry( 10, 2, 2 );
+
+	const material = new THREE.MeshBasicMaterial( {
+	    color: 0xffffff,
+	    // side: THREE.DoubleSide,
+	    envMap: scene.background,
+	    refractionRatio: 0.75
+	} );
+    
+	part[i] = new THREE.Mesh(geometry, material); 
+
+	var posX, posY, posZ;
+
+	posX = Math.random() * 500 - 250;
+	posY = Math.random() * 500 - 250;
+	posZ = Math.random() * 500 - 250 ;
+
+	part[i].position.x = posX;
+	part[i].position.y = posY;
+	part[i].position.z = posZ;		    
+
+	part[i].rotation.x = Math.PI * Math.random(); 
+	part[i].rotation.y = Math.PI * Math.random(); 
+	part[i].rotation.z = Math.PI * Math.random();
+	
+	scene.add( part[i] );
+
+    }
+	
     renderer = new THREE.WebGLRenderer( { antialias: true } );
     renderer.setPixelRatio( window.devicePixelRatio );
     renderer.setSize( window.innerWidth, window.innerHeight );
