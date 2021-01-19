@@ -1,5 +1,7 @@
 # THREE.studies para cellista, live coder y navegador
 
+Falta: capturar la pantalla y usarla como textura en un cubemap gigante. 
+
 Primer estudio de granulación audiovisual. Traspolación de objetos que producen sonido a imagen. 
 
 Este proyecto es posible gracias al desarrollo tecnológico de [PiranhaLab](https://github.com/piranhalab)

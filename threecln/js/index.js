@@ -7,9 +7,14 @@ import {PointerLockControls} from '/js/three/examples/jsm/controls/PointerLockCo
 //import { PointerLockControls } from './jsm/controls/PointerLockControls.js';
 
 let camera, scene, renderer, controls;
+let analyser; 
+let pX = [];
+let pY = [];
+let pZ = []; 
 
 const objects = [];
-
+const part = []; 
+    
 let raycaster;
 
 let moveForward = false;
@@ -238,30 +243,35 @@ function init() {
     geometry.computeBoundingSphere();
     */
 
-    const part = []; 
-    
-    for( var i = 0; i < 5000; i++){
-	
-	const geometry = new THREE.SphereGeometry( 10, 2, 2 );
+    const geometryC = new THREE.BoxGeometry( 800, 800, 800 );
+    const materialC = new THREE.MeshBasicMaterial( {color: 0x000000, side: THREE.DoubleSide } );
+    const cube = new THREE.Mesh( geometryC, materialC );
+    // cube.scale.x = 100; 
+    // scene.add( cube );
 
-	const material = new THREE.MeshBasicMaterial( {
-	    color: 0xffffff,
-	    // side: THREE.DoubleSide,
-	    envMap: scene.background,
-	    refractionRatio: 0.75
-	} );
+
+    const geometry = new THREE.SphereGeometry( 10, 4, 4 );
+
+    const material = new THREE.MeshBasicMaterial( {
+	color: 0xffffff,
+	// side: THREE.DoubleSide,
+	envMap: scene.background,
+	refractionRatio: 0.25
+    } );
+    
+    for( var i = 0; i < 2048; i++){
+	
     
 	part[i] = new THREE.Mesh(geometry, material); 
 
-	var posX, posY, posZ;
+	pX[i] = Math.random() * 200 - 100 ;
+	pY[i] = Math.random() * 200 - 100 ;
+	pZ[i] = Math.random() * 200 - 100 ;
 
-	posX = Math.random() * 500 - 250;
-	posY = Math.random() * 500 - 250;
-	posZ = Math.random() * 500 - 250 ;
-
-	part[i].position.x = posX;
-	part[i].position.y = posY;
-	part[i].position.z = posZ;		    
+	
+	part[i].position.x = pX[i];
+	part[i].position.y = pY[i];
+	part[i].position.z = pZ[i];		    
 
 	part[i].rotation.x = Math.PI * Math.random(); 
 	part[i].rotation.y = Math.PI * Math.random(); 
@@ -270,6 +280,27 @@ function init() {
 	scene.add( part[i] );
 
     }
+
+    let fftSize = 2048;
+    const listener = new THREE.AudioListener();
+    camera.add( listener );
+    const audio = new THREE.Audio(listener); 
+    //audio.setMediaElementSource(  document.getElementById( 'music' ) );
+    // audio.play(); 
+    //const audioElement = document.getElementById( 'music' );
+    // audioElement.play();
+
+    // const audio = new THREE.Audio( listener );
+    const audioLoader = new THREE.AudioLoader();
+
+    audioLoader.load( 'sounds/threeFinal.mp3', function( buffer ) {
+	audio.setBuffer( buffer );
+	audio.setLoop( true );
+	// audio.setVolume( 0.5 );
+	audio.play();
+});
+    
+    analyser = new THREE.AudioAnalyser( audio, fftSize); 
 	
     renderer = new THREE.WebGLRenderer( { antialias: true } );
     renderer.setPixelRatio( window.devicePixelRatio );
@@ -294,6 +325,21 @@ function onWindowResize() {
 function animate() {
     
     requestAnimationFrame( animate );
+
+    let data = analyser.getFrequencyData();
+
+    for(let i = 0; i < 2048; i++){
+	part[i].position.x = pX[i] * (1+data[i%32] / 128);
+	part[i].position.y = pY[i] * (1+data[i%32] / 128); 
+	part[i].position.z = pZ[i] * (1+data[i%32] / 128);
+
+	part[i].rotation.x += (data[i%10]/1000);
+	
+	part[i].rotation.y += (data[i%20]/1500); 
+
+	part[i].rotation.z += (data[i%40]/1200); 
+
+    }
     
     const time = performance.now();
     
