@@ -11,9 +11,12 @@ let analyser;
 let pX = [];
 let pY = [];
 let pZ = []; 
+let bamboo = [];
 
 const objects = [];
-const part = []; 
+const part = [];
+
+let clight1, clight2, clight3, clight4; 
     
 let raycaster;
 
@@ -38,23 +41,11 @@ function init() {
     camera.position.y = 10;
     
     scene = new THREE.Scene();
-
-    // scene.background = new THREE.Color( 0xffffff );
-
-    scene.background = new THREE.CubeTextureLoader().setPath('/img/').load([
-	'px.jpg',
-	'nx.jpg',
-	'py.jpg',
-	'ny.jpg',
-	'pz.jpg',
-	'nz.jpg'
-    ]);
-
-    // scene.fog = new THREE.Fog( 0xffffff, 0, 750 );
+    scene.background = new THREE.Color( 0x000000 );
     
-    const light = new THREE.HemisphereLight( 0xeeeeff, 0x777788, 0.75 );
-    light.position.set( 0.5, 1, 0.75 );
-    scene.add( light );
+    //const light = new THREE.HemisphereLight( 0xeeeeff, 0x777788, 0.75 );
+    //light.position.set( 0.5, 1, 0.75 );
+    //scene.add( light );
     
     controls = new PointerLockControls( camera, document.body );
     
@@ -62,9 +53,7 @@ function init() {
     const instructions = document.getElementById( 'instructions' );
     
     instructions.addEventListener( 'click', function () {
-	
 	controls.lock();
-	
     }, false );
     
     controls.addEventListener( 'lock', function () {
@@ -149,139 +138,104 @@ function init() {
     
     raycaster = new THREE.Raycaster( new THREE.Vector3(), new THREE.Vector3( 0, - 1, 0 ), 0, 10 );
 
+    let rojo = new THREE.Color( 0xaf43be );
+    let verde = new THREE.Color( 0xfd8090 ); 
+    let azul = new THREE.Color( 0xc4ffff); 
+    let morado = new THREE.Color( 0x08deea ); 
+    let blanco = new THREE.Color ( 0xffffff); 
     
-
-    // floor
-    
-    // let floorGeometry = new THREE.PlaneBufferGeometry( 2000, 2000, 100, 100 );
-    // floorGeometry.rotateX( - Math.PI / 2 );
-    
-    // vertex displacement
-    
-    // let position = floorGeometry.attributes.position;
-
-    /*
-
-    for ( let i = 0, l = position.count; i < l; i ++ ) {
-	
-	vertex.fromBufferAttribute( position, i );
-	
-	vertex.x += Math.random() * 20 - 10;
-	vertex.y += Math.random() * 2;
-	vertex.z += Math.random() * 20 - 10;
-	
-	position.setXYZ( i, vertex.x, vertex.y, vertex.z );
-	
-    }
-    
-    floorGeometry = floorGeometry.toNonIndexed(); // ensure each face has unique vertices
-    
-    position = floorGeometry.attributes.position;
-    const colorsFloor = [];
-    
-    for ( let i = 0, l = position.count; i < l; i ++ ) {
-	
-	color.setHSL( Math.random() * 0.3 + 0.5, 0.75, Math.random() * 0.25 + 0.75 );
-	colorsFloor.push( color.r, color.g, color.b );
-	
-    }
-    
-    floorGeometry.setAttribute( 'color', new THREE.Float32BufferAttribute( colorsFloor, 3 ) );
-    
-    const floorMaterial = new THREE.MeshBasicMaterial( { vertexColors: true } );
-    
-    const floor = new THREE.Mesh( floorGeometry, floorMaterial );
-    scene.add( floor );
-
-   
-    
-    // objects
-    
-    const boxGeometry = new THREE.BoxBufferGeometry( 20, 20, 20 ).toNonIndexed();
-    
-    position = boxGeometry.attributes.position;
-    const colorsBox = [];
-    
-    for ( let i = 0, l = position.count; i < l; i ++ ) {
-	
-	color.setHSL( Math.random() * 0.3 + 0.5, 0.75, Math.random() * 0.25 + 0.75 );
-	colorsBox.push( color.r, color.g, color.b );
-	
-    }
-    
-    boxGeometry.setAttribute( 'color', new THREE.Float32BufferAttribute( colorsBox, 3 ) );
-    
-    for ( let i = 0; i < 500; i ++ ) {
-	
-	const boxMaterial = new THREE.MeshPhongMaterial( { specular: 0xffffff, flatShading: true, vertexColors: true } );
-	boxMaterial.color.setHSL( Math.random() * 0.2 + 0.5, 0.75, Math.random() * 0.25 + 0.75 );
-	
-	const box = new THREE.Mesh( boxGeometry, boxMaterial );
-	box.position.x = Math.floor( Math.random() * 20 - 10 ) * 20;
-	box.position.y = Math.floor( Math.random() * 20 ) * 20 + 10;
-	box.position.z = Math.floor( Math.random() * 20 - 10 ) * 20;
-	
-	scene.add( box );
-	objects.push( box );
-
-    
-	
-    }
-    */
-    /*
-
-    const geometry = new THREE.Geometry();
-
-    geometry.vertices.push(
-	new THREE.Vector3( -10,  10, 0 ),
-	new THREE.Vector3( -10, -10, 0 ),
-	new THREE.Vector3(  10, -10, 0 )
-    );
-
-    
-    geometry.faces.push( new THREE.Face3( 0, 1, 2 ) );
-    geometry.computeBoundingSphere();
-    */
-
-    const geometryC = new THREE.BoxGeometry( 800, 800, 800 );
-    const materialC = new THREE.MeshBasicMaterial( {color: 0x000000, side: THREE.DoubleSide } );
-    const cube = new THREE.Mesh( geometryC, materialC );
-    // cube.scale.x = 100; 
-    // scene.add( cube );
-
-
-    const geometry = new THREE.SphereGeometry( 10, 4, 4 );
-
-    const material = new THREE.MeshBasicMaterial( {
+    clight1 = new THREE.PointLight(rojo, 0.25)
+    clight2 = new THREE.PointLight(verde, 0.25)
+    clight3 = new THREE.PointLight(azul, 0.25)
+    clight4 = new THREE.PointLight(morado, 0.25)
+		
+    scene.add( clight1 )
+    scene.add( clight2 )
+    scene.add( clight3 )
+    scene.add( clight4 )
+    let pilaresMaterial = new THREE.MeshStandardMaterial( {
 	color: 0xffffff,
-	// side: THREE.DoubleSide,
 	envMap: scene.background,
-	refractionRatio: 0.25
+	// refractionRatio: 0.75
+	roughness: 0.6,
+	metalness: 0.8
     } );
     
-    for( var i = 0; i < 2048; i++){
+    const pilargeom = new THREE.BoxGeometry(2, 400, 2);
+
+    let loc = 0;
+    
+    for(let k=0; k<18;k++){
+	for(let i=1;i<2;i++){
+
+	    bamboo[loc] = new THREE.Mesh(pilargeom, pilaresMaterial )
+	    // bamboo[loc].rotation.set((Math.random()- 1 )/2, 0, (Math.random()-1)/2)
+	    bamboo[loc].rotation.set((Math.random()- 0.5 )/4, 0, (Math.random()-0.5)/4)
+
+	    let ang = (k * 10 + ((i+1)%3)* 3 + i) * 2 * Math.PI/180
+	    let r1 = 40 + 45*i
+	    let r2 = 40 + 55*i
+	    
+	    bamboo[loc].position.set(r1 * Math.sin(ang), 10, r2 *Math.cos(ang) )
+	    scene.add(bamboo[loc])
+	    loc++; 
+	}
+    }
+
+    const geometry = new THREE.SphereGeometry( 10, 2, 2 );
+
+    const material = new THREE.MeshStandardMaterial( {
+	color: 0xffffff,
+	// side: THREE.DoubleSide,
+	// envMap: scene.background,
+	//refractionRatio: 0.95
+	roughness: 0.5,
+	metalness: 0.8,
+    } );
+
+    for( var i = 0; i < 4096; i++){
 	
     
 	part[i] = new THREE.Mesh(geometry, material); 
 
+	/*
+	var posX, posY, posZ;
+	
+	var theta1 = Math.random() * (Math.PI*2);
+	var theta2 = Math.random() * (Math.PI*2); 
+
+	posX = Math.cos(theta1) * Math.cos(theta2);
+	posY = Math.sin(theta1);
+	posZ = Math.cos(theta1) * Math.sin(theta2);
+
+	pX[i] = posX;
+	pY[i] = posY;
+	pZ[i] = posZ; 
+	Movimiento: WASD
+
+	*/
+	
 	pX[i] = Math.random() * 200 - 100 ;
-	pY[i] = Math.random() * 200 - 100 ;
+	pY[i] = Math.random() * 160 -80 + 10 ;
 	pZ[i] = Math.random() * 200 - 100 ;
 
-	
 	part[i].position.x = pX[i];
 	part[i].position.y = pY[i];
 	part[i].position.z = pZ[i];		    
-
+	
 	part[i].rotation.x = Math.PI * Math.random(); 
 	part[i].rotation.y = Math.PI * Math.random(); 
 	part[i].rotation.z = Math.PI * Math.random();
+
+	part[i].scale.x = Math.random() * 0.125 ; 
+	part[i].scale.y = Math.random() * 0.125 ; 
+	part[i].scale.z = Math.random() * 0.125 ; 
 	
 	scene.add( part[i] );
 
     }
 
-    let fftSize = 2048;
+    let fftSize = 512;
     const listener = new THREE.AudioListener();
     camera.add( listener );
     const audio = new THREE.Audio(listener); 
@@ -328,18 +282,41 @@ function animate() {
 
     let data = analyser.getFrequencyData();
 
-    for(let i = 0; i < 2048; i++){
-	part[i].position.x = pX[i] * (1+data[i%32] / 128);
-	part[i].position.y = pY[i] * (1+data[i%32] / 128); 
-	part[i].position.z = pZ[i] * (1+data[i%32] / 128);
+    for(let i = 0; i < 4096; i++){
+	part[i].position.x = pX[i] * (1+data[128-i%128] /128) ;
+	part[i].position.y = pY[i] * (1+data[i%128] / 1024); 
+	part[i].position.z = pZ[i] * (1+data[128-i%128] /128) ;
 
-	part[i].rotation.x += (data[i%10]/1000);
+	part[i].rotation.x += (data[i%128]/2000);
+	part[i].rotation.y += (data[i%128] /1000); 
+	part[i].rotation.z += (data[i% 20]/ 3000); 
+
+	part[i].scale.y = 0.5* ( data[i%128] / 64); 
 	
-	part[i].rotation.y += (data[i%20]/1500); 
-
-	part[i].rotation.z += (data[i%40]/1200); 
-
     }
+
+    //for(let i = 10; i < 100; i++){
+	// bamboo[0].position.x = 10 * (data[i%12]); 
+    // }
+
+    var time2 = Date.now() * 0.0005;
+
+    clight1.position.x = Math.sin( time2 * 0.7/2 ) * 1400;
+    clight1.position.y = Math.cos( time2* 0.5/2 ) * 50;
+    clight1.position.z = Math.cos( time2 * 0.3/2 ) * 1400;
+	
+    clight2.position.x = Math.cos( time2 * 0.3/2 ) * 1400;
+    clight2.position.y = Math.sin( time2 * 0.5/2 ) * 50;
+    clight2.position.z = Math.sin( time2 * 0.7/2 ) * 1400;
+	
+    clight3.position.x = Math.cos( time2 * 0.7/2 ) * 1400;
+    clight3.position.y = Math.cos( time2 * 0.3/2 ) * 50;
+    clight3.position.z = Math.sin( time2 * 0.5/2 ) * 1400;
+	
+    clight4.position.x = Math.sin( time2 * 0.3/2 ) * 1400;
+    clight4.position.y = Math.cos( time2 * 0.7/2 ) * 50;
+    clight4.position.z = Math.sin( time2 * 0.5/2 ) * 1400;
+
     
     const time = performance.now();
     
