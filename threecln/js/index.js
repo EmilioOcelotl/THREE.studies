@@ -15,10 +15,12 @@ let bamboo = [];
 
 const objects = [];
 const part = [];
+let meshS; 
 
 let clight1, clight2, clight3, clight4; 
     
 let raycaster;
+let cubeRenderTarget, cubeCamera; 
 
 let moveForward = false;
 let moveBackward = false;
@@ -37,12 +39,24 @@ animate();
 
 function init() {
     
-    camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 1, 1000 );
+    camera = new THREE.PerspectiveCamera( 60, window.innerWidth / window.innerHeight, 1, 1000 );
     camera.position.y = 10;
     
     scene = new THREE.Scene();
     scene.background = new THREE.Color( 0x000000 );
-    
+
+    // cube camera
+	   
+    cubeRenderTarget = new THREE.WebGLCubeRenderTarget( 512, {
+	format: THREE.RGBFormat,
+	generateMipmaps: true,
+	minFilter: THREE.LinearMipmapLinearFilter,
+	 encoding: THREE.sRGBEncoding
+
+    } );
+	    
+    cubeCamera = new THREE.CubeCamera( 1, 1000, cubeRenderTarget );
+
     //const light = new THREE.HemisphereLight( 0xeeeeff, 0x777788, 0.75 );
     //light.position.set( 0.5, 1, 0.75 );
     //scene.add( light );
@@ -144,37 +158,38 @@ function init() {
     let morado = new THREE.Color( 0x08deea ); 
     let blanco = new THREE.Color ( 0xffffff); 
     
-    clight1 = new THREE.PointLight(rojo, 0.25)
-    clight2 = new THREE.PointLight(verde, 0.25)
-    clight3 = new THREE.PointLight(azul, 0.25)
-    clight4 = new THREE.PointLight(morado, 0.25)
+    clight1 = new THREE.PointLight(rojo, 0.3)
+    clight2 = new THREE.PointLight(verde, 0.3)
+    clight3 = new THREE.PointLight(azul, 0.3)
+    clight4 = new THREE.PointLight(morado, 0.3)
 		
     scene.add( clight1 )
     scene.add( clight2 )
     scene.add( clight3 )
     scene.add( clight4 )
+
     let pilaresMaterial = new THREE.MeshStandardMaterial( {
 	color: 0xffffff,
 	envMap: scene.background,
 	// refractionRatio: 0.75
-	roughness: 0.6,
-	metalness: 0.8
+	roughness: 0.5,
+	metalness: 0.4
     } );
     
-    const pilargeom = new THREE.BoxGeometry(2, 400, 2);
+    const pilargeom = new THREE.BoxGeometry(1, 400, 1);
 
     let loc = 0;
     
     for(let k=0; k<18;k++){
-	for(let i=1;i<2;i++){
+	for(let i=1;i<3;i++){
 
 	    bamboo[loc] = new THREE.Mesh(pilargeom, pilaresMaterial )
 	    // bamboo[loc].rotation.set((Math.random()- 1 )/2, 0, (Math.random()-1)/2)
 	    bamboo[loc].rotation.set((Math.random()- 0.5 )/4, 0, (Math.random()-0.5)/4)
 
 	    let ang = (k * 10 + ((i+1)%3)* 3 + i) * 2 * Math.PI/180
-	    let r1 = 40 + 45*i
-	    let r2 = 40 + 55*i
+	    let r1 = 20 + 45*i
+	    let r2 = 20 + 50*i
 	    
 	    bamboo[loc].position.set(r1 * Math.sin(ang), 10, r2 *Math.cos(ang) )
 	    scene.add(bamboo[loc])
@@ -189,13 +204,12 @@ function init() {
 	// side: THREE.DoubleSide,
 	// envMap: scene.background,
 	//refractionRatio: 0.95
-	roughness: 0.5,
-	metalness: 0.8,
+	roughness: 0.1,
+	metalness: 0.4,
     } );
 
     for( var i = 0; i < 4096; i++){
-	
-    
+	    
 	part[i] = new THREE.Mesh(geometry, material); 
 
 	/*
@@ -216,7 +230,7 @@ function init() {
 	*/
 	
 	pX[i] = Math.random() * 200 - 100 ;
-	pY[i] = Math.random() * 160 -80 + 10 ;
+	pY[i] = Math.random() * 100 -50 + 10 ;
 	pZ[i] = Math.random() * 200 - 100 ;
 
 	part[i].position.x = pX[i];
@@ -238,7 +252,7 @@ function init() {
     let fftSize = 512;
     const listener = new THREE.AudioListener();
     camera.add( listener );
-    const audio = new THREE.Audio(listener); 
+    const audio = new THREE.PositionalAudio(listener); 
     //audio.setMediaElementSource(  document.getElementById( 'music' ) );
     // audio.play(); 
     //const audioElement = document.getElementById( 'music' );
@@ -250,15 +264,45 @@ function init() {
     audioLoader.load( 'sounds/threeFinal.mp3', function( buffer ) {
 	audio.setBuffer( buffer );
 	audio.setLoop( true );
-	// audio.setVolume( 0.5 );
+	audio.setRefDistance( 20 );
+	audio.setVolume( 2 );
 	audio.play();
 });
-    
+
+     const sphereS = new THREE.SphereBufferGeometry( 20, 32, 32 );
+
+    // const sphereS = new THREE.BoxGeometry( 40, 40, 40, 40, 40, 40 );
+
+    /*
+    const materialCam = new THREE.MeshStandardMaterial( {
+	color: 0xffffff,
+	// side: THREE.DoubleSide,
+	envMap: cubeRenderTarget.texture,
+	//refractionRatio: 0.95
+	roughness: 0.1,
+	metalness: 0.9,
+    } );
+    */
+
+    const materialCam = new THREE.MeshBasicMaterial( {
+	envMap: cubeRenderTarget.texture,
+	combine: THREE.MultiplyOperation,
+	reflectivity: 1
+    } );
+
+    meshS = new THREE.Mesh( sphereS, materialCam );
+    scene.add( meshS );
+    meshS.add( audio );
+    meshS.add( cubeCamera ); 
+
     analyser = new THREE.AudioAnalyser( audio, fftSize); 
 	
     renderer = new THREE.WebGLRenderer( { antialias: true } );
     renderer.setPixelRatio( window.devicePixelRatio );
     renderer.setSize( window.innerWidth, window.innerHeight );
+
+    renderer.outputEncoding = THREE.sRGBEncoding; // rendertargetcamera
+
     document.body.appendChild( renderer.domElement );
     
     //
@@ -295,12 +339,26 @@ function animate() {
 	
     }
 
+    
+    meshS.visible = false;
+	    
+	   //  edges.moveAudioSphere();
+
+    cubeCamera.position.copy( camera.position );
+    cubeCamera.update( renderer, scene );
+    meshS.visible = true;
+
+
     //for(let i = 10; i < 100; i++){
 	// bamboo[0].position.x = 10 * (data[i%12]); 
     // }
 
     var time2 = Date.now() * 0.0005;
-
+    
+    meshS.position.x = Math.sin( time2 * 0.5 ) * 100
+    meshS.position.y = Math.sin( time2 * 0.125 ) * 50
+    meshS.position.z = Math.cos( time2 * 0.25 ) * 100
+    
     clight1.position.x = Math.sin( time2 * 0.7/2 ) * 1400;
     clight1.position.y = Math.cos( time2* 0.5/2 ) * 50;
     clight1.position.z = Math.cos( time2 * 0.3/2 ) * 1400;

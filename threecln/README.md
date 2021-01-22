@@ -1,6 +1,6 @@
 # THREE.studies para cellista, live coder y navegador
 
-Falta: capturar la pantalla y usarla como textura en un cubemap gigante. 
+[threecln](http://threecln.piranhalab.cc)
 
 Primer estudio de granulación audiovisual. Traspolación de objetos que producen sonido a imagen. 
 
@@ -10,6 +10,11 @@ Este proyecto es posible gracias al desarrollo tecnológico de [PiranhaLab](http
 - Primero resolver el modo presencial que permite hacer pruebas y ensayos. Es necesario para ambos casos
 - Primera prueba deberá contemplar la captura de un flujo estéreo para enviarlo a la escena de three.js
 - La computadora que procesa debe compartir señal de audio vía sonobus y al mismo tiempo transmitir al servidor icecast vía butt. 
+
+## Para correr el sitio
+
+`cd threecln`
+`http-server .`
 
 ## Recursos necesarios para ejecutar la pieza
 
@@ -30,6 +35,7 @@ Este proyecto es posible gracias al desarrollo tecnológico de [PiranhaLab](http
 ## Propuestas para el futuro lejano
 
 - Resolver la transmisión de audio con p2p de manera personalizada. 
+- La pantalla como textura
 
 ## Enlaces
 
