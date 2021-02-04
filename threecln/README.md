@@ -4,8 +4,6 @@
 
 Primer estudio de granulación audiovisual. Traspolación de objetos que producen sonido a imagen. 
 
-Este proyecto es posible gracias al desarrollo tecnológico de [PiranhaLab](https://github.com/piranhalab)
-
 - Dos posibles escenarios: presencial o a distancia.
 - Primero resolver el modo presencial que permite hacer pruebas y ensayos. Es necesario para ambos casos
 - Primera prueba deberá contemplar la captura de un flujo estéreo para enviarlo a la escena de three.js
@@ -15,6 +13,10 @@ Este proyecto es posible gracias al desarrollo tecnológico de [PiranhaLab](http
 
 `cd threecln`
 `http-server .`
+
+## Estructura
+
+- Tres momentos duros cada uno con transiciones suaves distintas.
 
 ## Recursos necesarios para ejecutar la pieza
 
@@ -42,3 +44,5 @@ Este proyecto es posible gracias al desarrollo tecnológico de [PiranhaLab](http
 - [Sonobus](https://sonobus.net/)
 - [Butt](http://danielnoethen.de/butt/)
 - [Capture Audio and Video in HTML5](https://www.html5rocks.com/en/tutorials/getusermedia/intro/)
+
+Este proyecto es posible gracias al desarrollo tecnológico de [PiranhaLab](https://github.com/piranhalab)
