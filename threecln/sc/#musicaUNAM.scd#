@@ -67,8 +67,8 @@ s.meter;
 
 // cambiar por buffers de grabación
 
-~wpA1 = {arg amp = 0.25; (Pan2.ar(Warp1.ar(1, e, ~dema1, 1, 0.15, -1, 2, 0.2, 4))) * amp};
-~wpA2 = {arg amp = 0.25; (Pan2.ar(Warp1.ar(1, f, ~dema2, 1, 0.15, -1, 2, 0.4, 4))) * amp};
+~wpA1 = {arg amp = 0.25; (Pan2.ar(Warp1.ar(1, e, ~dema1, 1, 0.15, -1, 4, 0.1, 4))) * amp};
+~wpA2 = {arg amp = 0.25; (Pan2.ar(Warp1.ar(1, f, ~dema2, 1, 0.15, -1, 10, 0.2, 4))) * amp};
 
 )
 
