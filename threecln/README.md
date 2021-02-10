@@ -12,7 +12,7 @@ La partitura resulta de la retroalimentación entre el espacio digital y la inte
 
 PDF - pendiente
 
-![th](https://github.com/EmilioOcelotl/THREE.studies/blob/main/threecln/img/p01.png)
+![th](https://github.com/EmilioOcelotl/THREE.studies/blob/main/threecln/pdf/p01.pdf)
 
 ## Archivos de audio
 
