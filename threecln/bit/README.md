@@ -54,3 +54,50 @@ Cámara automática
 Objetos que parten de un punto específico.
 Retomar la idea de la cebolla. 
 Integración audiovisual
+
+
+
+Primer estudio de granulación audiovisual. Traspolación de objetos que producen sonido a imagen. 
+
+- Dos posibles escenarios: presencial o a distancia.
+- Primero resolver el modo presencial que permite hacer pruebas y ensayos. Es necesario para ambos casos
+- Primera prueba deberá contemplar la captura de un flujo estéreo para enviarlo a la escena de three.js
+- La computadora que procesa debe compartir señal de audio vía sonobus y al mismo tiempo transmitir al servidor icecast vía butt. 
+
+## Para correr el sitio
+
+`cd threecln`
+`http-server .`
+
+## Estructura
+
+- Tres momentos duros cada uno con transiciones suaves distintas.
+
+## Recursos necesarios para ejecutar la pieza
+
+- Tarjeta de sonido
+- Sonobus
+- Butt
+- Servidor Icecast
+- Liga al sitio "presencial" 
+
+## Pendientes
+
+- Probar sonobus en modo multicanal
+- Grabación y ruteo de audio en estéreo y multicanal por medio de html
+- Relación audiovisual
+- Control remoto de escenas 
+- Objetos sonoros y visuales
+
+## Propuestas para el futuro lejano
+
+- Resolver la transmisión de audio con p2p de manera personalizada. 
+- La pantalla como textura
+
+## Enlaces
+
+- [Sonobus](https://sonobus.net/)
+- [Butt](http://danielnoethen.de/butt/)
+- [Capture Audio and Video in HTML5](https://www.html5rocks.com/en/tutorials/getusermedia/intro/)
+
+Este proyecto es posible gracias al desarrollo tecnológico de [PiranhaLab](https://github.com/piranhalab)

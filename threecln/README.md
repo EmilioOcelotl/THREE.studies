@@ -1,48 +1,34 @@
-# THREE.studies para cellista, live coder y navegador
+# THREE.studies
 
-[threecln](http://threecln.piranhalab.cc)
+para cellista, live coder y navegador
 
-Primer estudio de granulación audiovisual. Traspolación de objetos que producen sonido a imagen. 
+![th](https://github.com/EmilioOcelotl/THREE.studies/blob/main/threecln/img/bannerTh.png)
 
-- Dos posibles escenarios: presencial o a distancia.
-- Primero resolver el modo presencial que permite hacer pruebas y ensayos. Es necesario para ambos casos
-- Primera prueba deberá contemplar la captura de un flujo estéreo para enviarlo a la escena de three.js
-- La computadora que procesa debe compartir señal de audio vía sonobus y al mismo tiempo transmitir al servidor icecast vía butt. 
+[threecln](http://threecln.piranhalab.cc) en modo fijo. Cello eléctrico: Iracema de Andrade.
 
-## Para correr el sitio
+## Partitura gráfica
+
+La partitura resulta de la retroalimentación entre el espacio digital y la interpretación. Es posible tener una aproximación fijada con la siguiente partitura gráfica. 
+
+PDF - pendiente
+
+## Archivos de audio
+
+[threecln](http://threecln.piranhalab.cc) reproduce audios posicionados.
+
+[Audios por pista](https://github.com/EmilioOcelotl/THREE.studies/tree/main/threecln/sounds)
+
+Audio final mezcla estéreo - Pendiente
+
+## Electrónica en vivo
+
+[Código de SuperCollider](https://github.com/EmilioOcelotl/THREE.studies/blob/main/threecln/sc/musicaUNAM.scd)
+
+## Para correr el espacio
 
 `cd threecln`
 `http-server .`
 
-## Estructura
+## Para ejecutar la pieza. 
 
-- Tres momentos duros cada uno con transiciones suaves distintas.
 
-## Recursos necesarios para ejecutar la pieza
-
-- Una tarjeta de audio
-- Sonobus
-- Butt
-- Servidor Icecast
-- Liga al sitio "presencial" 
-
-## Pendientes
-
-- Probar sonobus en modo multicanal
-- Grabación y ruteo de audio en estéreo y multicanal por medio de html
-- Relación audiovisual
-- Control remoto de escenas 
-- Objetos sonoros y visuales
-
-## Propuestas para el futuro lejano
-
-- Resolver la transmisión de audio con p2p de manera personalizada. 
-- La pantalla como textura
-
-## Enlaces
-
-- [Sonobus](https://sonobus.net/)
-- [Butt](http://danielnoethen.de/butt/)
-- [Capture Audio and Video in HTML5](https://www.html5rocks.com/en/tutorials/getusermedia/intro/)
-
-Este proyecto es posible gracias al desarrollo tecnológico de [PiranhaLab](https://github.com/piranhalab)
