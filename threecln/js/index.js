@@ -40,7 +40,7 @@ animate();
 function init() {
     
     camera = new THREE.PerspectiveCamera( 60, window.innerWidth / window.innerHeight, 1, 1000 );
-    camera.position.y = 0;
+    camera.position.y = 10;
     
     scene = new THREE.Scene();
     // scene.background = new THREE.Color(  0x000000);
@@ -180,7 +180,7 @@ function init() {
 	color: 0xffffff,
 	envMap: scene.background,
 	// refractionRatio: 0.75
-	roughness: 0.2,
+	roughness: 0.4,
 	metalness: 0.8
     } );
     
@@ -407,17 +407,17 @@ function animate() {
 
     var time2 = Date.now() * 0.0005;
     
-    meshS.position.x = Math.sin( time2 * 2 ) * 200
+    meshS.position.x = Math.sin( time2 * 0.25 ) * 100
     meshS.position.y = Math.sin( time2 * 0.125 ) * 50
-    meshS.position.z = Math.cos( time2 * 1 ) * 200
+    meshS.position.z = Math.cos( time2 * 0.25 ) * 100
     
-    meshS2.position.x = Math.sin( time2 * 1 ) * -200
+    meshS2.position.x = Math.sin( time2 * 0.25 ) * -100
     meshS2.position.y = Math.sin( time2 * 0.125 ) * 50
-    meshS2.position.z = Math.cos( time2 * 2 ) * -200
+    meshS2.position.z = Math.cos( time2 * 0.25 ) * -100
 
-    meshS3.position.x = Math.sin( time2 * 2 ) * -200
+    meshS3.position.x = Math.sin( time2 * 0.25 ) * -100
     meshS3.position.y = Math.sin( time2 * 0.125 ) * -50
-    meshS3.position.z = Math.cos( time2 * 1 ) * 200
+    meshS3.position.z = Math.cos( time2 * 0.25 ) * 100
 
     meshS.rotation.x += data[0] / 3000; 
     meshS.rotation.y += data[1] / 3000; 
@@ -490,7 +490,7 @@ function animate() {
 	if ( controls.getObject().position.y < 10 ) {
 	    
 	    velocity.y = 0;
-	    controls.getObject().position.y = 10;
+	    controls.getObject().position.y = 0;
 	    
 	    canJump = true;
 	    

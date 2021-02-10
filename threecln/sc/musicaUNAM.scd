@@ -81,8 +81,6 @@ f =  Buffer.alloc(s, 44100*20, 1);
 
 )
 
-// Salidas y grabación
-
 (
 
 ~out1 = {Out.ar(2, ~wpA1)};
