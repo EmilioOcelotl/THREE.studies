@@ -1,12 +1,12 @@
-# THREE.studies
+![th](https://github.com/EmilioOcelotl/THREE.studies/blob/main/threecln/img/bannerTh.png)
+
+# THREE.studies - threecln
 
 para cellista, live coder y navegador
 
-![th](https://github.com/EmilioOcelotl/THREE.studies/blob/main/threecln/img/bannerTh.png)
-
 [threecln](http://threecln.piranhalab.cc) en modo fijo. Cello eléctrico: Iracema de Andrade.
 
-## Partitura gráfica
+## Partitura (gráfica)
 
 La partitura resulta de la retroalimentación entre el espacio digital y la interpretación. Es posible tener una aproximación fijada con la siguiente partitura gráfica. 
 
@@ -27,6 +27,7 @@ Audio final mezcla estéreo - Pendiente
 ## Para correr el espacio
 
 `cd threecln`
+
 `http-server .`
 
 ## Para ejecutar la pieza. 
