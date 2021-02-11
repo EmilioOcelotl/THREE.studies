@@ -1,8 +1,10 @@
-![th](https://github.com/EmilioOcelotl/THREE.studies/blob/main/threecln/img/bannerTh.png)
+![th](https://github.com/EmilioOcelotl/THREE.studies/blob/main/threecln/img/bannerPrincipal.png)
 
 # THREE.studies - threecln
 
 para cellista, live coder y navegador
+
+![th](https://github.com/EmilioOcelotl/THREE.studies/blob/main/threecln/img/bannerTh.png)
 
 [threecln](http://threecln.piranhalab.cc) en modo fijo. Cello eléctrico: Iracema de Andrade.
 
@@ -10,9 +12,16 @@ para cellista, live coder y navegador
 
 La partitura resulta de la retroalimentación entre el espacio digital y la interpretación. Es posible tener una aproximación fijada con la siguiente partitura gráfica. 
 
-PDF - pendiente
+[Versión en PDF](https://github.com/EmilioOcelotl/THREE.studies/blob/main/threecln/pdf/final.pdf)
 
-![th](https://github.com/EmilioOcelotl/THREE.studies/blob/main/threecln/pdf/p01.pdf)
+![th](https://github.com/EmilioOcelotl/THREE.studies/blob/main/threecln/img/01.png)
+![th](https://github.com/EmilioOcelotl/THREE.studies/blob/main/threecln/img/02.png)
+![th](https://github.com/EmilioOcelotl/THREE.studies/blob/main/threecln/img/03.png)
+![th](https://github.com/EmilioOcelotl/THREE.studies/blob/main/threecln/img/04.png)
+![th](https://github.com/EmilioOcelotl/THREE.studies/blob/main/threecln/img/05.png)
+![th](https://github.com/EmilioOcelotl/THREE.studies/blob/main/threecln/img/06.png)
+![th](https://github.com/EmilioOcelotl/THREE.studies/blob/main/threecln/img/07.png)
+![th](https://github.com/EmilioOcelotl/THREE.studies/blob/main/threecln/img/08.png)
 
 ## Archivos de audio
 
@@ -32,6 +41,7 @@ Audio final mezcla estéreo - Pendiente
 
 `http-server .`
 
-## Para ejecutar la pieza. 
+## Para ejecutar la pieza
 
-
+- Configurar el sistema. 
+Acceder a la liga. 

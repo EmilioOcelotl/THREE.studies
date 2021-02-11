@@ -40,7 +40,12 @@ animate();
 function init() {
     
     camera = new THREE.PerspectiveCamera( 60, window.innerWidth / window.innerHeight, 1, 1000 );
-    camera.position.y = 10;
+    // camera.position.y = 10;
+
+    camera.position.x = 100;
+    camera.position.z = 100;
+
+    camera.lookAt(0, 0, 0); 
     
     scene = new THREE.Scene();
     // scene.background = new THREE.Color(  0x000000);
@@ -339,7 +344,60 @@ function init() {
     analyser = new THREE.AudioAnalyser( audio, fftSize); 
     analyser2 = new THREE.AudioAnalyser( audio2, fftSize); 
     analyser3 = new THREE.AudioAnalyser( audio3, fftSize); 
-	
+
+    // Lineas
+
+    const materialL1 = new THREE.LineBasicMaterial({
+	color: 0xff0000,
+	linewidth: 4,
+
+    });
+    
+    const points = [];
+    points.push( new THREE.Vector3( - 2000, 0, 0 ) );
+    points.push( new THREE.Vector3(   2000, 0, 0 ) );
+    // points.push( new THREE.Vector3( 1000, 0, 0 ) );
+    
+    const geometryL = new THREE.BufferGeometry().setFromPoints( points );
+    
+    const line = new THREE.Line( geometryL, materialL1 );
+    scene.add( line );
+
+
+    const materialL2 = new THREE.LineBasicMaterial({
+	color: 0x00ff00,
+	linewidth: 4,
+    });
+    
+    const points2 = [];
+    points2.push( new THREE.Vector3( 0, -2000, 0 ) );
+    points2.push( new THREE.Vector3( 0, 2000, 0 ) );
+    // points.push( new THREE.Vector3( 1000, 0, 0 ) );
+    
+    const geometryL2 = new THREE.BufferGeometry().setFromPoints( points2 );
+    
+    const line2 = new THREE.Line( geometryL2, materialL2 );
+    scene.add( line2 );
+
+
+
+    const materialL3 = new THREE.LineBasicMaterial({
+	color: 0x0000ff,
+	linewidth: 4,
+
+    });
+    
+    const points3 = [];
+    points3.push( new THREE.Vector3( 0, 0, 2000 ) );
+    points3.push( new THREE.Vector3( 0, 0, -2000 ) );
+    // points.push( new THREE.Vector3( 1000, 0, 0 ) );
+    
+    const geometryL3 = new THREE.BufferGeometry().setFromPoints( points3 );
+    
+    const line3 = new THREE.Line( geometryL3, materialL3 );
+    scene.add( line3 );
+
+    
     renderer = new THREE.WebGLRenderer( { antialias: true, alpha:true } );
     renderer.setPixelRatio( window.devicePixelRatio );
     renderer.setSize( window.innerWidth, window.innerHeight );
@@ -487,10 +545,10 @@ function animate() {
 	
 	controls.getObject().position.y += ( velocity.y * delta ); // new behavior
 	
-	if ( controls.getObject().position.y < 10 ) {
+	if ( controls.getObject().position.y < 30 ) {
 	    
 	    velocity.y = 0;
-	    controls.getObject().position.y = 0;
+	    controls.getObject().position.y = 20;
 	    
 	    canJump = true;
 	    
