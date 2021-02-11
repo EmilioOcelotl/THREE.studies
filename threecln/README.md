@@ -4,8 +4,6 @@
 
 para cellista, live coder y navegador
 
-![th](https://github.com/EmilioOcelotl/THREE.studies/blob/main/threecln/img/bannerTh.png)
-
 [threecln](http://threecln.piranhalab.cc) en modo fijo. Cello eléctrico: Iracema de Andrade.
 
 ## Partitura (gráfica)
