@@ -1,6 +1,7 @@
 // "use strict";
 import * as THREE from '/js/three/build/three.module.js';
 import {PointerLockControls} from '/js/three/examples/jsm/controls/PointerLockControls.js';
+import {OrbitControls} from '/js/three/examples/jsm/controls/OrbitControls.js'; 
 
 //import * as THREE from '../build/three.module.js';
 
@@ -38,17 +39,19 @@ init();
 animate();
 
 function init() {
+
     
+    renderer = new THREE.WebGLRenderer( { antialias: true, alpha:true } );
     camera = new THREE.PerspectiveCamera( 60, window.innerWidth / window.innerHeight, 1, 1000 );
     // camera.position.y = 10;
 
     camera.position.x = 100;
     camera.position.z = 100;
 
-    camera.lookAt(0, 0, 0); 
+    camera.lookAt(200, 0, 0); 
     
     scene = new THREE.Scene();
-    // scene.background = new THREE.Color(  0x000000);
+    scene.background = new THREE.Color(  0x000000);
 
     // cube camera
 /*	   
@@ -66,31 +69,42 @@ function init() {
     //light.position.set( 0.5, 1, 0.75 );
     //scene.add( light );
     
-    controls = new PointerLockControls( camera, document.body );
+    // controls = new PointerLockControls( camera, document.body );
+    controls = new OrbitControls( camera, renderer.domElement );
+
+    controls.maxDistance = 300;
+
     
     const blocker = document.getElementById( 'blocker' );
     const instructions = document.getElementById( 'instructions' );
-    
+
+   
     instructions.addEventListener( 'click', function () {
-	controls.lock();
+	// 	controls.lock();
+	
+    	instructions.style.display = 'none';
+	blocker.style.display = 'none';
+
     }, false );
     
     controls.addEventListener( 'lock', function () {
 	
-	instructions.style.display = 'none';
-	blocker.style.display = 'none';
 	
     } );
     
     controls.addEventListener( 'unlock', function () {
 	
-	blocker.style.display = 'block';
-	instructions.style.display = '';
 	
     } );
+
+    blocker.style.display = 'block';
+    instructions.style.display = '';
+
     
-    scene.add( controls.getObject() );
+    // scene.add( controls.getObject() );
     
+   
+
     const onKeyDown = function ( event ) {
 	
 	switch ( event.keyCode ) {
@@ -125,7 +139,7 @@ function init() {
     };
     
     const onKeyUp = function ( event ) {
-	
+	sub
 	switch ( event.keyCode ) {
 	    
 	case 38: // up
@@ -163,18 +177,19 @@ function init() {
     let morado = new THREE.Color( 0x08deea ); 
     let blanco = new THREE.Color ( 0xffffff); 
 
-    /*
-    clight1 = new THREE.PointLight(rojo, 0.1)
-    clight2 = new THREE.PointLight(verde, 0.1)
-    clight3 = new THREE.PointLight(azul, 0.1)
-    clight4 = new THREE.PointLight(morado, 0.1)
-    */
-
+   
+    clight1 = new THREE.PointLight(rojo, 0.4)
+    clight2 = new THREE.PointLight(verde, 0.4)
+    clight3 = new THREE.PointLight(azul, 0.4)
+    clight4 = new THREE.PointLight(morado, 0.4)
     
-    clight1 = new THREE.PointLight(blanco, 0.1)
-    clight2 = new THREE.PointLight(blanco, 0.1)
-    clight3 = new THREE.PointLight(blanco, 0.1)
-    clight4 = new THREE.PointLight(blanco, 0.1)
+
+    /*
+    clight1 = new THREE.PointLight(blanco, 0.2)
+    clight2 = new THREE.PointLight(blanco, 0.2)
+    clight3 = new THREE.PointLight(blanco, 0.2)
+    clight4 = new THREE.PointLight(blanco, 0.2)
+*/
 
     scene.add( clight1 )
     scene.add( clight2 )
@@ -185,8 +200,8 @@ function init() {
 	color: 0xffffff,
 	envMap: scene.background,
 	// refractionRatio: 0.75
-	roughness: 0.4,
-	metalness: 0.8
+	roughness: 0.6,
+	metalness: 0.4
     } );
     
     const pilargeom = new THREE.BoxGeometry(1, 1800, 0.5);
@@ -254,15 +269,15 @@ function init() {
 	part[i].rotation.y = Math.PI * Math.random(); 
 	part[i].rotation.z = Math.PI * Math.random();
 
-	part[i].scale.x = Math.random() * 0.125 ; 
-	part[i].scale.y = Math.random() * 0.25 ; 
-	part[i].scale.z = Math.random() * 0.25 ; 
+	part[i].scale.x = Math.random() * 0.125/2; 
+	part[i].scale.y = Math.random() * 0.25/ 2; 
+	part[i].scale.z = Math.random() * 0.25/2; 
 	
 	scene.add( part[i] );
 
     }
 
-    let fftSize = 256;
+    let fftSize = 512; 
     const listener = new THREE.AudioListener();
     camera.add( listener );
 
@@ -308,14 +323,14 @@ function init() {
 
     // const sphereS = new THREE.SphereGeometry( 5, 32, 32 );
     
-    const sphereS = new THREE.BoxGeometry( 20, 20, 20 );   
+    const sphereS = new THREE.BoxGeometry( 10, 10, 10 );   
    
     const materialCam = new THREE.MeshStandardMaterial( {
 	color: 0xffffff,
 	// side: THREE.DoubleSide,
 	//envMap: cubeRenderTarget.texture,
 	//refractionRatio: 0.95
-	roughness: 0.2,
+	roughness: 0.4,
 	metalness: 0.8,
     } );
 
@@ -361,7 +376,7 @@ function init() {
     const geometryL = new THREE.BufferGeometry().setFromPoints( points );
     
     const line = new THREE.Line( geometryL, materialL1 );
-    scene.add( line );
+    // scene.add( line );
 
 
     const materialL2 = new THREE.LineBasicMaterial({
@@ -374,12 +389,10 @@ function init() {
     points2.push( new THREE.Vector3( 0, 2000, 0 ) );
     // points.push( new THREE.Vector3( 1000, 0, 0 ) );
     
-    const geometryL2 = new THREE.BufferGeometry().setFromPoints( points2 );
+ const geometryL2 = new THREE.BufferGeometry().setFromPoints( points2 );
     
     const line2 = new THREE.Line( geometryL2, materialL2 );
-    scene.add( line2 );
-
-
+    // scene.add( line2 );
 
     const materialL3 = new THREE.LineBasicMaterial({
 	color: 0x0000ff,
@@ -395,10 +408,9 @@ function init() {
     const geometryL3 = new THREE.BufferGeometry().setFromPoints( points3 );
     
     const line3 = new THREE.Line( geometryL3, materialL3 );
-    scene.add( line3 );
+    //scene.add( line3 );
 
     
-    renderer = new THREE.WebGLRenderer( { antialias: true, alpha:true } );
     renderer.setPixelRatio( window.devicePixelRatio );
     renderer.setSize( window.innerWidth, window.innerHeight );
 
@@ -421,6 +433,10 @@ function onWindowResize() {
     
 }
 
+function lerp (start, end, amt){
+  return (1-amt)*start+amt*end
+}
+
 function animate() {
     
     requestAnimationFrame( animate );
@@ -429,18 +445,26 @@ function animate() {
     let data2 = analyser2.getFrequencyData();
     let data3 = analyser3.getFrequencyData();
 
+    let t;
+    t = Math.min(t + 0.01, 1);
 
     for(let i = 0; i < 4096; i++){
-	
-	part[i].position.x = pX[i] * (1+data [i%256] /2) ;
-	part[i].position.y = pY[i] * (1+data2[i%256] /2); 
-	part[i].position.z = pZ[i] * (1+data3[i%256] /2) ;
+
+	part[i].position.x = lerp(pX[i], pX[i] * (data [i%128]*5000) , 0.0001); 
+
+	part[i].position.y = lerp(pY[i], pY[i] * (data2 [i%128]*5000), 0.0001); 
+
+	part[i].position.z = lerp(pZ[i], pZ[i] * (data3 [i%128]*5000) , 0.0001); 
+
+	// part[i].position.x = pX[i] * (1+data [i%512] /2) ;
+	//part[i].position.y = pY[i] * (1+data2[i%512] /2); 
+	// part[i].position.z = pZ[i] * (1+data3[i%512] /2) ;
 
 	part[i].rotation.x += (data[i%28]/3000);
 	part[i].rotation.y += (data2[i%28] /4000); 
 	part[i].rotation.z += (data3[i% 28]/ 2000); 
 
-	part[i].scale.x = 2 * ( data[i%32] / 256); 
+	part[i].scale.x = 1 * ( data[i%32] / 256); 
 
 	// part[i].scale.y = 0.0125 + 1 * ( data[i%32] / 128); 
 
@@ -464,7 +488,15 @@ function animate() {
     // }
 
     var time2 = Date.now() * 0.0005;
-    
+
+    controls.update();
+
+    // impulsos cada cierto tiempo 
+
+    camera.position.x = Math.sin( time2 * 0.25 ) * ( 50 + Math.sin( time2 * 0.5 )* 50); 
+    camera.position.y = Math.cos( time2 * 0.25 ) * 100; 
+    camera.position.z = Math.cos( time2 * 0.25 ) * - 100; 
+
     meshS.position.x = Math.sin( time2 * 0.25 ) * 100
     meshS.position.y = Math.sin( time2 * 0.125 ) * 50
     meshS.position.z = Math.cos( time2 * 0.25 ) * 100
@@ -545,10 +577,10 @@ function animate() {
 	
 	controls.getObject().position.y += ( velocity.y * delta ); // new behavior
 	
-	if ( controls.getObject().position.y < 30 ) {
-	    
+	if ( controls.getObject().position.y < 10 ) {
+	   
 	    velocity.y = 0;
-	    controls.getObject().position.y = 20;
+	    controls.getObject().position.y = 0;
 	    
 	    canJump = true;
 	    
