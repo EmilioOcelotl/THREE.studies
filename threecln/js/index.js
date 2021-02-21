@@ -4,7 +4,6 @@ import {PointerLockControls} from '/js/three/examples/jsm/controls/PointerLockCo
 import {OrbitControls} from '/js/three/examples/jsm/controls/OrbitControls.js'; 
 
 //import * as THREE from '../build/three.module.js';
-
 //import { PointerLockControls } from './jsm/controls/PointerLockControls.js';
 
 let camera, scene, renderer, controls;
@@ -35,13 +34,24 @@ const direction = new THREE.Vector3();
 const vertex = new THREE.Vector3();
 const color = new THREE.Color();
 
-init();
-animate();
+const startButton = document.getElementById( 'startButton' );
+
+startButton.addEventListener( 'click', init );
+
+// init();
+// animate();
 
 function init() {
 
+    const overlay = document.getElementById( 'overlay' );
+    overlay.remove();
+
+    const blocker = document.getElementById( 'blocker' );
+    const instructions = document.getElementById( 'instructions' );
+    instructions.remove(); 
+    blocker.remove();
     
-    renderer = new THREE.WebGLRenderer( { antialias: true, alpha:true } );
+    renderer = new THREE.WebGLRenderer( { antialias: true } );
     camera = new THREE.PerspectiveCamera( 60, window.innerWidth / window.innerHeight, 1, 1000 );
     // camera.position.y = 10;
 
@@ -53,124 +63,9 @@ function init() {
     scene = new THREE.Scene();
     scene.background = new THREE.Color(  0x000000);
 
-    // cube camera
-/*	   
-    cubeRenderTarget = new THREE.WebGLCubeRenderTarget( 512, {
-	format: THREE.RGBFormat,
-	generateMipmaps: true,
-	minFilter: THREE.LinearMipmapLinearFilter,
-	 encoding: THREE.sRGBEncoding
-
-    } );
-	    
-    cubeCamera = new THREE.CubeCamera( 1, 1000, cubeRenderTarget );
-*/
-    //const light = new THREE.HemisphereLight( 0xeeeeff, 0x777788, 0.75 );
-    //light.position.set( 0.5, 1, 0.75 );
-    //scene.add( light );
-    
-    // controls = new PointerLockControls( camera, document.body );
     controls = new OrbitControls( camera, renderer.domElement );
-
     controls.maxDistance = 300;
-
-    
-    const blocker = document.getElementById( 'blocker' );
-    const instructions = document.getElementById( 'instructions' );
-
-   
-    instructions.addEventListener( 'click', function () {
-	// 	controls.lock();
-	
-    	instructions.style.display = 'none';
-	blocker.style.display = 'none';
-
-    }, false );
-    
-    controls.addEventListener( 'lock', function () {
-	
-	
-    } );
-    
-    controls.addEventListener( 'unlock', function () {
-	
-	
-    } );
-
-    blocker.style.display = 'block';
-    instructions.style.display = '';
-
-    
-    // scene.add( controls.getObject() );
-    
-   
-
-    const onKeyDown = function ( event ) {
-	
-	switch ( event.keyCode ) {
-	    
-	case 38: // up
-	case 87: // w
-	    moveForward = true;
-	    break;
-	    
-	case 37: // left
-	case 65: // a
-	    moveLeft = true;
-	    break;
-	    
-	case 40: // down
-	case 83: // s
-	    moveBackward = true;
-	    break;
-	    
-	case 39: // right
-	case 68: // d
-	    moveRight = true;
-	    break;
-	    
-	case 32: // space
-	    if ( canJump === true ) velocity.y += 350;
-	    canJump = false;
-	    break;
-	    
-	}
-	
-    };
-    
-    const onKeyUp = function ( event ) {
-	sub
-	switch ( event.keyCode ) {
-	    
-	case 38: // up
-	case 87: // w
-	    moveForward = false;
-	    break;
-	    
-	case 37: // left
-	case 65: // a
-	    moveLeft = false;
-	    break;
-	    
-	case 40: // down
-	case 83: // s
-	    moveBackward = false;
-	    break;
-	    
-	case 39: // right
-	case 68: // d
-	    moveRight = false;
-	    break;
-	    
-	}
-	
-    };
-    
-    document.addEventListener( 'keydown', onKeyDown, false );
-    document.addEventListener( 'keyup', onKeyUp, false );
-    
-    raycaster = new THREE.Raycaster( new THREE.Vector3(), new THREE.Vector3( 0, - 1, 0 ), 0, 10 );
-
+        
     let rojo = new THREE.Color( 0xaf43be );
     let verde = new THREE.Color( 0xfd8090 ); 
     let azul = new THREE.Color( 0xc4ffff); 
@@ -183,7 +78,6 @@ function init() {
     clight3 = new THREE.PointLight(azul, 0.4)
     clight4 = new THREE.PointLight(morado, 0.4)
     
-
     /*
     clight1 = new THREE.PointLight(blanco, 0.2)
     clight2 = new THREE.PointLight(blanco, 0.2)
@@ -204,7 +98,7 @@ function init() {
 	metalness: 0.4
     } );
     
-    const pilargeom = new THREE.BoxGeometry(1, 1800, 0.5);
+    const pilargeom = new THREE.BoxGeometry(0.25, 1800, 0.25);
 
     let loc = 0;
     
@@ -232,7 +126,7 @@ function init() {
 	// side: THREE.DoubleSide,
 	// envMap: scene.background,
 	//refractionRatio: 0.95
-	roughness: 0.2,
+	roughness: 0.1,
 	metalness: 0.8,
     } );
 
@@ -421,6 +315,8 @@ function init() {
     //
     
     window.addEventListener( 'resize', onWindowResize, false );
+
+    animate(); 
     
 }
 
@@ -493,7 +389,7 @@ function animate() {
 
     // impulsos cada cierto tiempo 
 
-    camera.position.x = Math.sin( time2 * 0.25 ) * ( 50 + Math.sin( time2 * 0.5 )* 50); 
+    camera.position.x = Math.sin( time2 * 0.25 ) * ( 75 + Math.sin( time2 * 0.5 )* 40); 
     camera.position.y = Math.cos( time2 * 0.25 ) * 100; 
     camera.position.z = Math.cos( time2 * 0.25 ) * - 100; 
 
@@ -541,52 +437,6 @@ function animate() {
 
     
     const time = performance.now();
-    
-    if ( controls.isLocked === true ) {
-	
-	raycaster.ray.origin.copy( controls.getObject().position );
-	raycaster.ray.origin.y -= 10;
-	
-	const intersections = raycaster.intersectObjects( objects );
-	
-	const onObject = intersections.length > 0;
-	
-	const delta = ( time - prevTime ) / 1000;
-	
-	velocity.x -= velocity.x * 10.0 * delta;
-	velocity.z -= velocity.z * 10.0 * delta;
-	
-	velocity.y -= 9.8 * 100.0 * delta; // 100.0 = mass
-	
-	direction.z = Number( moveForward ) - Number( moveBackward );
-	direction.x = Number( moveRight ) - Number( moveLeft );
-	direction.normalize(); // this ensures consistent movements in all directions
-	
-	if ( moveForward || moveBackward ) velocity.z -= direction.z * 400.0 * delta;
-	if ( moveLeft || moveRight ) velocity.x -= direction.x * 400.0 * delta;
-	
-	if ( onObject === true ) {
-	    
-	    velocity.y = Math.max( 0, velocity.y );
-	    canJump = true;
-	    
-	}
-	
-	controls.moveRight( - velocity.x * delta );
-	controls.moveForward( - velocity.z * delta );
-	
-	controls.getObject().position.y += ( velocity.y * delta ); // new behavior
-	
-	if ( controls.getObject().position.y < 10 ) {
-	   
-	    velocity.y = 0;
-	    controls.getObject().position.y = 0;
-	    
-	    canJump = true;
-	    
-	}
-	
-    }
     
     prevTime = time;
     
