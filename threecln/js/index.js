@@ -151,9 +151,9 @@ function init() {
 
 	*/
 	
-	pX[i] = Math.random() * 10 - 5 ;
-	pY[i] = Math.random() * 10 - 5 ;
-	pZ[i] = Math.random() * 10 - 5 ;
+	pX[i] = Math.random() * 20 -10 ;
+	pY[i] = Math.random() * 20 -10 ;
+	pZ[i] = Math.random() * 20 -10 ;
 
 	part[i].position.x = pX[i];
 	part[i].position.y = pY[i];
