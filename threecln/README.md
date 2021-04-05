@@ -41,3 +41,9 @@ El siguiente código es compatible con la modalidad de electrónica en vivo y se
 `cd threecln`
 
 `http-server .`
+
+## Recursos
+
+- [Sonobus](https://sonobus.net/)
+
+- [Capture Audio and Video in HTML5](https://www.html5rocks.com/en/tutorials/getusermedia/intro/)
