@@ -1,11 +1,13 @@
+![th](https://github.com/EmilioOcelotl/THREE.studies/blob/main/threeBEASTs/img/beast.png)
+
 # THREE.studies @ BEAST FEaST 2021
 
 threeBEASTs
 
 ## Escenarios
 
-- *Plan A*: Concierto telemático con electrónica multicanal, fuente estéreo / multicanal en uno / varios sitio(s) 
-- *Plan B*: Experiencia fija con electrónica y fuente multicanal. en uno / varios sitio(s)
+- **Plan A**: Concierto telemático con electrónica multicanal, fuente estéreo / multicanal en uno / varios sitio(s) 
+- **Plan B**: Experiencia fija con electrónica y fuente multicanal. en uno / varios sitio(s)
 
 ## Pendientes
 
