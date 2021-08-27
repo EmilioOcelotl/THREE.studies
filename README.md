@@ -18,4 +18,4 @@ THREE.studies @ BEAST FEaST. 2021.
 
 ## Pendientes
 
-- [ ] Diferenciar entre threes 
+- [ ] Diferenciar entre threes

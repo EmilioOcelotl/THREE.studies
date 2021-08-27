@@ -2,21 +2,21 @@
 
 THREE.studies - threecln
 
-Pieza para espacio inmersivo. 
+Pieza para espacio inmersivo.
 
-El contexto de la pandemia dificultó el registro de la pieza. A continuación se presentan algunas soluciones. 
+El contexto de la pandemia dificultó el registro de la pieza. A continuación se presentan algunas soluciones.
 
 Para resolver la electrónica de la pieza en modo remoto es necesario realizar un ruteo de audio vía Jack y Sonobus (para el caso del sistema operativo Linux).
 
-El siguiente código es compatible con la modalidad de electrónica en vivo y se divide en 4 partes: 
+El siguiente código es compatible con la modalidad de electrónica en vivo y se divide en 4 partes:
 
 1. Inicialización - define el entorno de trabajo (proxyspace)  y parametros iniciales
 
-2. Procesamiento - define el procesamiento de la señal final que se envía a la computadora remota y la transformación de la electrónica en vivo que se realiza por medio de programación al vuelo. 
+2. Procesamiento - define el procesamiento de la señal final que se envía a la computadora remota y la transformación de la electrónica en vivo que se realiza por medio de programación al vuelo.
 
-3. Control y grabación - Interactúa con un controlador MIDI, establece momentos de grabación, y cambios de amplitudes. Adicionalmente se relaciona con el inicio o final del registro final. El registro se graba en varias pistas para procesarlas de manera individual. 
+3. Control y grabación - Interactúa con un controlador MIDI, establece momentos de grabación, y cambios de amplitudes. Adicionalmente se relaciona con el inicio o final del registro final. El registro se graba en varias pistas para procesarlas de manera individual.
 
-4. Post -Permite procesar pistas individuales y exportarlas en formatos que puedan ser reproducidos por un navegador 
+4. Post -Permite procesar pistas individuales y exportarlas en formatos que puedan ser reproducidos por un navegador
 
 */
 
@@ -28,18 +28,18 @@ s.options.numOutputBusChannels = 10;
 
 MIDIIn.connectAll;
 // Esperar poquito
-p = ProxySpace.push(s.boot);
 s.scope;
 s.meter;
 // p.makeTempoClock((110/120));
 // p.quant = 4;
 PirE.loadSamples();
 // Esperar poquito
+
 i = Buffer.read(s, "/home/em/.local/share/SuperCollider/Recordings/SC_200428_161124.aiff");
 
 g = Buffer.read(s, "/home/em/Documentos/musicaUNAM/entrega/audio/separado/soundIn.wav");
 g = Buffer.read(s, "/home/em/Documentos/musicaUNAM/entrega/audio/separado/wpa1.wav");
-g = Buffer.read(s, "/home/em/Documentos/musicaUNAM/entrega/audio/separado/wpa2.wav");
+g = Buffer.read(s,"/home/emi/Música/threeBEASTs/canales/celloLimpio.wav" );
 
 /////////// 2. Procesamiento  //////////////
 
@@ -69,6 +69,8 @@ f =  Buffer.alloc(s, 44100*20, 1);
 )
 
 ~out = ~wpA1 + ~wpA2 ;
+// ~out = ~wpA1 + ~wpA2 + ~post;
+
 // ~out.free
 
 (
@@ -83,12 +85,14 @@ f =  Buffer.alloc(s, 44100*20, 1);
 
 (
 
-~out1 = {Out.ar(2, ~wpA1)};
-~out2 = {Out.ar(4, ~wpA2)};
+~out1 = {Out.ar(4, ~wpA1)};
+~out2 = {Out.ar(6, ~wpA2)};
 // ~out2 = {Out.ar(6, ~wpA3)};
 ~out3 = {arg amp; Out.ar(8, Pan2.ar(SoundIn.ar(0) * amp))};
 
 )
+
+~post  = {PlayBuf.ar(2, g, BufRateScale.kr(g), doneAction: Done.freeSelf)*1};
 
 /////////// 3. COntrol y grabación  //////////////
 
@@ -116,11 +120,14 @@ c = { arg src, chan, num, val;
 		e.free;
 		e =  Buffer.alloc(s, 44100*20, 1);
 		~rec1 = {arg run = 1; RecordBuf.ar(SoundIn.ar(0), e, doneAction:0, loop:0)};
+		// ~rec1 = {arg run = 1; RecordBuf.ar(~post, e, doneAction:0, loop:0)};
+
 	});
 	if(num == 65 && val == 127, {
 		f.free;
 		f =  Buffer.alloc(s, 44100*5, 1);
 		~rec2 = {arg run = 1; RecordBuf.ar(SoundIn.ar(0), f, doneAction:0, loop:0)};
+		// ~rec2 = {arg run = 1; RecordBuf.ar(~post, f, doneAction:0, loop:0)};
 	});
 
 	// Threshold
@@ -134,6 +141,9 @@ c = { arg src, chan, num, val;
 	// Global Rec
 	if(num == 45 && val == 127, {
 		s.record;
+		// reproducir
+		// ~post  = {PlayBuf.ar(2, g, BufRateScale.kr(g), doneAction: Done.freeSelf)*1};
+
 	});
 	if(num == 42 && val == 127, {
 		s.stopRecording;
