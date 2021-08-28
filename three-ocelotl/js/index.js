@@ -40,6 +40,17 @@ const startButton = document.getElementById( 'startButton' );
 
 startButton.addEventListener( 'click', init );
 
+let noiseStep; 
+
+let mouseX = 0;
+let mouseY = 0;
+
+let windowHalfX = window.innerWidth / 2;
+let windowHalfY = window.innerHeight / 2;
+
+
+document.addEventListener( 'mousemove', onDocumentMouseMove );
+
 // init();
 // animate();
 
@@ -56,7 +67,6 @@ function init() {
     renderer = new THREE.WebGLRenderer( { antialias: true } );
     camera = new THREE.PerspectiveCamera( 60, window.innerWidth / window.innerHeight, 1, 1000 );
     // camera.position.y = 10;
-
 
     
     camera.position.x = 100;
@@ -141,7 +151,6 @@ function init() {
 	    
 	part[i] = new THREE.Mesh(geometry, material); 
 
-	/*
 	var posX, posY, posZ;
 	
 	var theta1 = Math.random() * (Math.PI*2);
@@ -151,16 +160,15 @@ function init() {
 	posY = Math.sin(theta1);
 	posZ = Math.cos(theta1) * Math.sin(theta2);
 
-	pX[i] = posX;
-	pY[i] = posY;
-	pZ[i] = posZ; 
-	Movimiento: WASD
-
-	*/
+	let radio = Math.random() * 2;
 	
-	pX[i] = Math.random() * 20 -10 ;
-	pY[i] = Math.random() * 20 -10 ;
-	pZ[i] = Math.random() * 20 -10 ;
+	pX[i] = posX * 50 * radio;
+	pY[i] = posY * 50 * radio;
+	pZ[i] = posZ * 50 * radio; 
+	
+	//pX[i] = Math.random() * 20 -10 ;
+	//pY[i] = Math.random() * 20 -10 ;
+	//pZ[i] = Math.random() * 20 -10 ;
 
 	part[i].position.x = pX[i];
 	part[i].position.y = pY[i];
@@ -200,6 +208,7 @@ function init() {
 	audio.setRefDistance( 20 );
 	audio.setVolume( 2 );
 	audio.play();
+	
     });
 
     const audioLoader2 = new THREE.AudioLoader();
@@ -207,7 +216,7 @@ function init() {
     audioLoader2.load( 'sounds/wpa1.ogg', function( buffer ) {
 	audio2.setBuffer( buffer );
 	audio2.setLoop( true );
-	audio2.setRefDistance( 20 );
+	audio2.setRefDistance( 2 );
 	audio2.setVolume( 2 );
 	audio2.play();
     });
@@ -221,6 +230,7 @@ function init() {
 	audio3.setVolume( 2 );
 	audio3.play();
     });
+
 
     // const sphereS = new THREE.SphereGeometry( 5, 32, 32 );
     
@@ -321,13 +331,17 @@ function init() {
     
     //
     
-    window.addEventListener( 'resize', onWindowResize, false );
+    window.addEventListener( 'resize', onWindowResize);
 
     animate(); 
     
 }
 
 function onWindowResize() {
+
+    
+    windowHalfX = window.innerWidth / 2;
+    windowHalfY = window.innerHeight / 2;
     
     camera.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix();
@@ -344,7 +358,7 @@ function animate() {
     
     requestAnimationFrame( animate );
 
-    let noiseStep = 0;
+    noiseStep = 0;
     
     let data = analyser.getFrequencyData();
     let data2 = analyser2.getFrequencyData();
@@ -357,25 +371,26 @@ function animate() {
     let rand2 = [];
     let rand3 = [];
 
+    let hola;
+    
     for(let i = 0; i < 4096; i++){
 
-	let hola = noise.get(i*noiseStep) * 5000;
-	
-	part[i].position.x = lerp(pX[i], pX[i] * (data [i%128])*hola , 0.0001) ; 
+	hola = noise.get(noiseStep) * 1;
 
-	part[i].position.y = lerp(pY[i], pY[i] * (data2 [i%128]*5000), 0.0001) ; 
+	//part[i].position.x = pX[i] * (data [i%128]*10000) + hola - 25;
+	part[i].position.x = lerp(pX[i], pX[i] * (data [i%32]*800), 0.0001)  ; 
+	part[i].position.y = lerp(pY[i], pY[i] * (data2 [i%32]*800), 0.0001) ; 
+	part[i].position.z = lerp(pZ[i], pZ[i] * (data3 [i%32]*800), 0.0001) ; 
 
-	part[i].position.z = lerp(pZ[i], pZ[i] * (data3 [i%128]*5000) , 0.0001) ; 
-
-	// part[i].position.x = pX[i] * (1+data [i%512] /2) ;
+	//part[i].position.x = pX[i] * (1+data [i%512] /2) ;
 	//part[i].position.y = pY[i] * (1+data2[i%512] /2); 
 	// part[i].position.z = pZ[i] * (1+data3[i%512] /2) ;
 
-	part[i].rotation.x += (data[i%28]/3000);
-	part[i].rotation.y += (data2[i%28] /4000); 
-	part[i].rotation.z += (data3[i% 28]/ 2000); 
+	part[i].rotation.x += (data[i%32]/3000);
+	part[i].rotation.y += (data2[i%32] /4000); 
+	part[i].rotation.z += (data3[i% 32]/ 2000); 
 
-	part[i].scale.x = 1 * ( data[i%32] / 256); 
+	part[i].scale.x = 2 * ( data[i%32] / 256); 
 
 	// part[i].scale.y = 0.0125 + 1 * ( data[i%32] / 128); 
 
@@ -404,11 +419,17 @@ function animate() {
 
     controls.update();
 
-    // impulsos cada cierto tiempo 
+    camera.position.x += ( mouseX - camera.position.x ) * .5 * Math.cos( 0.25 );
+    camera.position.y += ( - mouseY - camera.position.y ) * .5;
+        // impulsos cada cierto tiempo 
 
-    camera.position.x = Math.sin( time2 * 0.25 ) * ( 75 + Math.sin( time2 * 0.5 )* 50); 
-    camera.position.y = Math.cos( time2 * 0.25 ) * 100; 
+    //camera.rotation.x = Math.sin( time2 * 0.25 ) * ( 75 + Math.sin( time2 * 0.5 )* 0.1) * 0.125; 
+    camera.rotation.y = Math.cos( time2 * 0.125 ) * 0.001; 
     camera.position.z = Math.cos( time2 * 0.25 ) * - 100; 
+
+    
+    //camera.lookAt( scene.position );
+
 
     meshS.position.x = Math.sin( time2 * 0.25 ) * 100
     meshS.position.y = Math.sin( time2 * 0.125 ) * 50
@@ -422,19 +443,19 @@ function animate() {
     meshS3.position.y = Math.sin( time2 * 0.125 ) * -50
     meshS3.position.z = Math.cos( time2 * 0.25 ) * 100
 
-    meshS.rotation.x += data[0] / 3000; 
-    meshS.rotation.y += data[1] / 3000; 
-    meshS.rotation.z += data[2] / 3000; 
+    meshS.rotation.x += data[0] / 1000; 
+    meshS.rotation.y += data[1] / 1000; 
+    meshS.rotation.z += data[2] / 1000; 
 
     // meshS.scale.x += data[0] / 1000; 
     
-    meshS2.rotation.x += data2[0] / 3000; 
-    meshS2.rotation.y += data2[1] / 3000; 
-    meshS2.rotation.z += data2[2] / 3000; 
+    meshS2.rotation.x += data2[0] / 2000; 
+    meshS2.rotation.y += data2[1] / 2000; 
+    meshS2.rotation.z += data2[2] / 2000; 
 
-    meshS3.rotation.x += data3[0] / 3000; 
-    meshS3.rotation.y += data3[1] / 3000; 
-    meshS3.rotation.z += data3[2] / 3000; 
+    meshS3.rotation.x += data3[0] / 2000; 
+    meshS3.rotation.y += data3[1] / 2000; 
+    meshS3.rotation.z += data3[2] / 2000; 
     
     clight1.position.x = Math.sin( time2 * 0.7/2 ) * 1400;
     clight1.position.y = Math.cos( time2* 0.5/2 ) * 50;
@@ -460,3 +481,11 @@ function animate() {
     renderer.render( scene, camera );
     
 }
+
+function onDocumentMouseMove( event ) {
+
+    mouseX = ( event.clientX - windowHalfX ) / 2;
+    mouseY = ( event.clientY - windowHalfY ) / 2;
+    
+}
+
