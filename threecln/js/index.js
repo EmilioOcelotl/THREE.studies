@@ -187,7 +187,7 @@ function init() {
     // const audio = new THREE.Audio( listener );
     const audioLoader = new THREE.AudioLoader();
 
-    audioLoader.load( 'sounds/in.ogg', function( buffer ) {
+    audioLoader.load( 'sounds/in.mp3', function( buffer ) {
 	audio.setBuffer( buffer );
 	audio.setLoop( true );
 	audio.setRefDistance( 20 );

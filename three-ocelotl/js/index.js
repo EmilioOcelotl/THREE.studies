@@ -6,7 +6,7 @@ import {OrbitControls} from '/js/three/examples/jsm/controls/OrbitControls.js';
 //import * as THREE from '../build/three.module.js';
 //import { PointerLockControls } from './jsm/controls/PointerLockControls.js';
 
-let camera, scene, renderer, controls;
+let camera, camera2, scene, sceneR, renderer, controls;
 let analyser, analyser2, analyser3; 
 let pX = [];
 let pY = [];
@@ -48,9 +48,19 @@ let mouseY = 0;
 let windowHalfX = window.innerWidth / 2;
 let windowHalfY = window.innerHeight / 2;
 
+let sliderPos = window.innerWidth / 2;
 
 document.addEventListener( 'mousemove', onDocumentMouseMove );
 
+function isMobile() {
+    const isAndroid = /Android/i.test(navigator.userAgent);
+    const isiOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
+    return isAndroid || isiOS;
+}
+
+const mobile = isMobile();
+
+let plane2; 
 // init();
 // animate();
 
@@ -63,11 +73,12 @@ function init() {
     const instructions = document.getElementById( 'instructions' );
     instructions.remove(); 
     blocker.remove();
-    
+
+    let video = document.getElementById( 'video' );
+
     renderer = new THREE.WebGLRenderer( { antialias: true } );
     camera = new THREE.PerspectiveCamera( 60, window.innerWidth / window.innerHeight, 1, 1000 );
     // camera.position.y = 10;
-
     
     camera.position.x = 100;
     camera.position.z = 100;
@@ -77,11 +88,23 @@ function init() {
     scene = new THREE.Scene();
     scene.background = new THREE.Color(  0xffffff );
 
-    //scene.background = new THREE.Color( 0xff0000 );
+    sceneR = new THREE.Scene();
+    sceneR.background = new THREE.Color( 0xffffff );
 
+    //scene.background = new THREE.Color( 0xff0000 );
     
     controls = new OrbitControls( camera, renderer.domElement );
     controls.maxDistance = 300;
+
+    ////////////////////////////////////////////////////
+
+    const geometry2 = new THREE.PlaneGeometry( 192, 108 );
+    const material2 = new THREE.MeshBasicMaterial( {color: 0xffffff, side: THREE.DoubleSide} );
+
+    material2.map = new THREE.VideoTexture( video );
+
+    plane2 = new THREE.Mesh( geometry2, material2 );
+    sceneR.add( plane2 );
         
     let rojo = new THREE.Color( 0x711c91 );
     let verde = new THREE.Color( 0xea00d9 ); 
@@ -202,32 +225,34 @@ function init() {
     // const audio = new THREE.Audio( listener );
     const audioLoader = new THREE.AudioLoader();
 
-    audioLoader.load( 'sounds/in.ogg', function( buffer ) {
+    audioLoader.load( 'sounds/in.mp3', function( buffer ) {
 	audio.setBuffer( buffer );
 	audio.setLoop( true );
-	audio.setRefDistance( 20 );
-	audio.setVolume( 2 );
+	audio.setRefDistance( 200 );
+	audio.setVolume( 1 );
 	audio.play();
 	
     });
 
     const audioLoader2 = new THREE.AudioLoader();
     
-    audioLoader2.load( 'sounds/wpa1.ogg', function( buffer ) {
+    audioLoader2.load( 'sounds/wpa1.mp3', function( buffer ) {
 	audio2.setBuffer( buffer );
 	audio2.setLoop( true );
-	audio2.setRefDistance( 2 );
-	audio2.setVolume( 2 );
+	audio2.setRefDistance( 200 );
+	audio2.setVolume( 1 );
 	audio2.play();
+	video.play(); 
+
     });
     
     const audioLoader3 = new THREE.AudioLoader();
     
-    audioLoader3.load( 'sounds/wpa2.ogg', function( buffer ) {
+    audioLoader3.load( 'sounds/wpa2.mp3', function( buffer ) {
 	audio3.setBuffer( buffer );
 	audio3.setLoop( true );
-	audio3.setRefDistance( 20 );
-	audio3.setVolume( 2 );
+	audio3.setRefDistance( 200 );
+	audio3.setVolume( 1 );
 	audio3.play();
     });
 
@@ -325,6 +350,9 @@ function init() {
     renderer.setPixelRatio( window.devicePixelRatio );
     renderer.setSize( window.innerWidth, window.innerHeight );
 
+    renderer.setScissorTest( true );
+    renderer.setAnimationLoop( render );
+				
     // renderer.outputEncoding = THREE.sRGBEncoding; // rendertargetcamera
 
     document.body.appendChild( renderer.domElement );
@@ -332,6 +360,7 @@ function init() {
     //
     
     window.addEventListener( 'resize', onWindowResize);
+    initSlider();
 
     animate(); 
     
@@ -354,9 +383,51 @@ function lerp (start, end, amt){
   return (1-amt)*start+amt*end
 }
 
+
+function initSlider() {
+
+    const slider = document.querySelector( '.slider' );
+    
+    function onPointerDown() {
+	
+	if ( event.isPrimary === false ) return;
+	
+	controls.enabled = false;
+	
+	window.addEventListener( 'pointermove', onPointerMove );
+	window.addEventListener( 'pointerup', onPointerUp );
+	
+    }
+    
+    function onPointerUp() {
+	
+	controls.enabled = true;
+	
+	window.removeEventListener( 'pointermove', onPointerMove );
+	window.removeEventListener( 'pointerup', onPointerUp );
+	
+    }
+    
+    function onPointerMove( e ) {
+
+	if ( event.isPrimary === false ) return;
+	
+	sliderPos = Math.max( 0, Math.min( window.innerWidth, e.pageX ) );
+	
+	slider.style.left = sliderPos - ( slider.offsetWidth / 2 ) + "px";
+	
+    }
+    
+    slider.style.touchAction = 'none'; // disable touch scroll
+    slider.addEventListener( 'pointerdown', onPointerDown );
+    
+}
+
 function animate() {
     
     requestAnimationFrame( animate );
+
+    var time2 = Date.now() * 0.0005;
 
     noiseStep = 0;
     
@@ -372,7 +443,22 @@ function animate() {
     let rand3 = [];
 
     let hola;
+
+    plane2.lookAt( camera.position ); 
+    // plane2.position.x = camera.position.x;
     
+    plane2.rotation.y = -Math.cos( time2 * 0.125 ) * 0.001; 
+    // plane2.position.y = -plane2.position.y; 
+    // plane2.rotation.z = -camera.rotation.z * 0.001; 
+    // plane2.position.y += -( - mouseY - camera.position.y ) * .5;
+
+    // plane2.position.y = camera.position.y;
+    // plane2.position.z = camera.position.z -100;
+
+    // plane2.rotation.y = Math.cos( time2 * 0.125 ) * 0.001; 
+    // plane2.position.z = -Math.cos( time2 * 0.25 ) * - 100; 
+
+      
     for(let i = 0; i < 4096; i++){
 
 	hola = noise.get(noiseStep) * 1;
@@ -415,14 +501,16 @@ function animate() {
 	// bamboo[0].position.x = 10 * (data[i%12]); 
     // }
 
-    var time2 = Date.now() * 0.0005;
 
     controls.update();
 
-    camera.position.x += ( mouseX - camera.position.x ) * .5 * Math.cos( 0.25 );
-    camera.position.y += ( - mouseY - camera.position.y ) * .5;
-        // impulsos cada cierto tiempo 
+    // si no es móvil entonces funciona así el asunto 
 
+    if(!mobile){
+	camera.position.x += ( mouseX - camera.position.x ) * .5 * Math.cos( 0.25 );
+	camera.position.y += ( - mouseY - camera.position.y ) * .5;
+        // impulsos cada cierto tiempo 
+    }
     //camera.rotation.x = Math.sin( time2 * 0.25 ) * ( 75 + Math.sin( time2 * 0.5 )* 0.1) * 0.125; 
     camera.rotation.y = Math.cos( time2 * 0.125 ) * 0.001; 
     camera.position.z = Math.cos( time2 * 0.25 ) * - 100; 
@@ -478,6 +566,12 @@ function animate() {
     
     prevTime = time;
     
+    // renderer.render( scene, camera );
+
+    renderer.setScissor( 0, 0, sliderPos, window.innerHeight );
+    renderer.render( sceneR, camera );
+    
+    renderer.setScissor( sliderPos, 0, window.innerWidth, window.innerHeight );
     renderer.render( scene, camera );
     
 }
@@ -487,5 +581,14 @@ function onDocumentMouseMove( event ) {
     mouseX = ( event.clientX - windowHalfX ) / 2;
     mouseY = ( event.clientY - windowHalfY ) / 2;
     
+}
+
+function render() {
+    
+    renderer.setScissor( 0, 0, sliderPos, window.innerHeight );
+    renderer.render( sceneR, camera );
+    
+    renderer.setScissor( sliderPos, 0, window.innerWidth, window.innerHeight );
+    renderer.render( scene, camera );
 }
 

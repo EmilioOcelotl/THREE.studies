@@ -27,6 +27,7 @@ s.options.memSize_(2**14);
 s.options.numOutputBusChannels = 10;
 
 MIDIIn.connectAll;
+p = ProxySpace.push(s.boot);
 // Esperar poquito
 s.scope;
 s.meter;
@@ -94,85 +95,31 @@ f =  Buffer.alloc(s, 44100*20, 1);
 
 ~post  = {PlayBuf.ar(2, g, BufRateScale.kr(g), doneAction: Done.freeSelf)*1};
 
-/////////// 3. COntrol y grabación  //////////////
 
-(
-
-s.recChannels = 10;
-s.prepareForRecord;
-
-c = { arg src, chan, num, val;
-	[chan,num,val].postln;
-
-	// Amp
-	if(num == 0, {
-		~wpA1.set(\amp, val.linlin(0.0, 127.0, 0.0, 2.0));
-	});
-	if(num == 1, {
-		~wpA2.set(\amp, val.linlin(0.0, 127.0, 0.0, 2.0));
-	});
-	if(num == 2, {
-		~out3.set(\amp, val.linlin(0.0, 127.0, 0.0, 2.0));
-	});
-
-	// Local Rec
-	if(num == 64 && val == 127, {
-		e.free;
-		e =  Buffer.alloc(s, 44100*20, 1);
-		~rec1 = {arg run = 1; RecordBuf.ar(SoundIn.ar(0), e, doneAction:0, loop:0)};
-		// ~rec1 = {arg run = 1; RecordBuf.ar(~post, e, doneAction:0, loop:0)};
-
-	});
-	if(num == 65 && val == 127, {
-		f.free;
-		f =  Buffer.alloc(s, 44100*5, 1);
-		~rec2 = {arg run = 1; RecordBuf.ar(SoundIn.ar(0), f, doneAction:0, loop:0)};
-		// ~rec2 = {arg run = 1; RecordBuf.ar(~post, f, doneAction:0, loop:0)};
-	});
-
-	// Threshold
-	if(num == 16, {
-		~ons1.set(\th, val.linlin(0.0, 127.0, 0.0, 1.0));
-	});
-	if(num == 17, {
-		~ons2.set(\th, val.linlin(0.0, 127.0, 0.0, 1.0));
-	});
-
-	// Global Rec
-	if(num == 45 && val == 127, {
-		s.record;
-		// reproducir
-		// ~post  = {PlayBuf.ar(2, g, BufRateScale.kr(g), doneAction: Done.freeSelf)*1};
-
-	});
-	if(num == 42 && val == 127, {
-		s.stopRecording;
-	});
-
-};
-
-MIDIIn.addFuncTo(\control, c);
-
-)
 
 ///////////// 4. Post //////////////////
 
+s.options.numOutputBusChannels = 10;
+
 p = ProxySpace.push(s.boot);
 
-g = Buffer.read(s, "/home/emi/Música/threeoc/canalesSep/wp1.wav");
-g = Buffer.read(s, "/home/emi/Música/threeoc/canalesSep/wp2.wav");
-g = Buffer.read(s,"/home/emi/Música/threeoc/canalesSep/cello.wav" );
+a = Buffer.read(s, "/home/emi/Música/threeoc/canalesSep/wp1.wav");
+b = Buffer.read(s, "/home/emi/Música/threeoc/canalesSep/wp2.wav");
+c = Buffer.read(s,"/home/emi/Música/threeoc/canalesSep/cello.wav" );
 
-//s.prepareForRecord("/home/em/Documentos/musicaUNAM/entrega/audio/separado/soundInproc.wav");
-//s.prepareForRecord("/home/em/Documentos/musicaUNAM/entrega/audio/separado/wpa1proc.wav");
-// s.prepareForRecord("/home/em/Documentos/musicaUNAM/entrega/audio/separado/wpa2proc.wav");
+s.meter;
 
 (
-~post  = {PlayBuf.ar(2, g, BufRateScale.kr(g), doneAction: Done.freeSelf)*1};
-~post.play;
-~post.stop
-~out = ~post;
-s.record;
+
+~wp1  = {PlayBuf.ar(2, a, BufRateScale.kr(a), doneAction: Done.freeSelf)*1};
+~out1 = {Out.ar(2, ~wp1)};
+
+~wp2  = {PlayBuf.ar(2, b, BufRateScale.kr(b), doneAction: Done.freeSelf)*1};
+~out2 = {Out.ar(4, ~wp2)};
+
+~cello  = {PlayBuf.ar(2, c, BufRateScale.kr(c), doneAction: Done.freeSelf)*1};
+~out3 = {Out.ar(6, ~cello)};
+
 )
 
 (

@@ -75,6 +75,20 @@
 			    cursor: pointer;
 			}
 
+			.slider {
+			    position: absolute;
+			    cursor: ew-resize;
+			    
+			    width: 40px;
+			    height: 40px;
+			    background-color: #505050;
+			    opacity: 0.7;
+			    border-radius: 10%;
+			    
+			    top: calc(50% - 20px);
+			    left: calc(50% - 20px);
+			}
+			
 		</style>
 	</head>
 	<body>
@@ -99,8 +113,11 @@
 		<div id="overlay">
 		  <button id="startButton">Play</button>
 		</div>
-		<div id="container"></div>
+		<div id="container">
+		  <div class="slider"></div>
+		</div>
 
+		<video  id="video"  src="vid/threeoc.mp4" type="video/mp4" style="display:none;">
 		
 		<script type="module" src="js/index.js"></script>
 		<script src="https://unpkg.com/perlin-noise-3d"></script>
