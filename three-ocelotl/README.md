@@ -51,4 +51,5 @@ El siguiente código es compatible con la modalidad de electrónica en vivo y se
 ## Pendientes específicos del montaje en ocelotl
 
 - [ ] Encadenar sonidos para usar solo un analisis
-- [ ] Circulos 
+- [ ] Circulos
+- [ ] Sin audio posicionado y con pocos objetos para móviles 

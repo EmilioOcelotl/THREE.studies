@@ -18,7 +18,9 @@ const part = [];
 let meshS, meshS2, meshS3; 
 
 let clight1, clight2, clight3, clight4; 
-    
+
+let clight1R, clight2R, clight3R, clight4R; 
+        
 let raycaster;
 let cubeRenderTarget, cubeCamera; 
 
@@ -63,6 +65,9 @@ const mobile = isMobile();
 let plane2; 
 // init();
 // animate();
+let video = document.getElementById( 'video' );
+
+let contador = 0; 
 
 function init() {
 
@@ -74,9 +79,12 @@ function init() {
     instructions.remove(); 
     blocker.remove();
 
-    let video = document.getElementById( 'video' );
+    const cuadrito = document.getElementById( 'cuadrito' );
+    cuadrito.style.display = 'block';
+
 
     renderer = new THREE.WebGLRenderer( { antialias: true } );
+    
     camera = new THREE.PerspectiveCamera( 60, window.innerWidth / window.innerHeight, 1, 1000 );
     // camera.position.y = 10;
     
@@ -86,10 +94,10 @@ function init() {
     camera.lookAt(200, 0, 0); 
     
     scene = new THREE.Scene();
-    scene.background = new THREE.Color(  0xffffff );
+    scene.background = new THREE.Color(  0x000000 );
 
     sceneR = new THREE.Scene();
-    sceneR.background = new THREE.Color( 0xffffff );
+    sceneR.background = new THREE.Color( 0x000000 );
 
     //scene.background = new THREE.Color( 0xff0000 );
     
@@ -99,7 +107,7 @@ function init() {
     ////////////////////////////////////////////////////
 
     const geometry2 = new THREE.PlaneGeometry( 192, 108 );
-    const material2 = new THREE.MeshBasicMaterial( {color: 0xffffff, side: THREE.DoubleSide} );
+    const material2 = new THREE.MeshStandardMaterial( {color: 0xffffff, side: THREE.DoubleSide, roughness: 0.99, metalness: 0.4} );
 
     material2.map = new THREE.VideoTexture( video );
 
@@ -113,10 +121,15 @@ function init() {
     let blanco = new THREE.Color ( 0xffffff); 
 
    
-    clight1 = new THREE.PointLight(blanco, 0.5)
-    clight2 = new THREE.PointLight(blanco, 0.5)
-    clight3 = new THREE.PointLight(blanco, 0.5)
-    clight4 = new THREE.PointLight(blanco, 0.5)
+    clight1 = new THREE.PointLight(blanco, 3)
+    clight2 = new THREE.PointLight(blanco, 3)
+    clight3 = new THREE.PointLight(blanco,3)
+    clight4 = new THREE.PointLight(blanco, 3)
+
+    clight1R = new THREE.PointLight(blanco, 0.5)
+    clight2R = new THREE.PointLight(blanco, 0.5)
+    clight3R = new THREE.PointLight(blanco, 0.5)
+    clight4R = new THREE.PointLight(blanco, 0.5)
     
     /*
     clight1 = new THREE.PointLight(blanco, 0.2)
@@ -125,20 +138,26 @@ function init() {
     clight4 = new THREE.PointLight(blanco, 0.2)
 */
 
-    scene.add( clight1 )
-    scene.add( clight2 )
-    scene.add( clight3 )
-    scene.add( clight4 )
+    scene.add( clight1R )
+    scene.add( clight2R )
+    scene.add( clight3R )
+    scene.add( clight4R )
 
+    sceneR.add( clight1 )
+    sceneR.add( clight2 )
+    sceneR.add( clight3 )
+    sceneR.add( clight4 )
+
+    
     let pilaresMaterial = new THREE.MeshStandardMaterial( {
 	color: 0xffffff,
 	envMap: scene.background,
 	// refractionRatio: 0.75
-	roughness: 0.1,
-	metalness: 0.7
+	roughness: 0.4,
+	metalness: 0.4
     } );
     
-    const pilargeom = new THREE.BoxGeometry(0.25, 1800, 0.25);
+    const pilargeom = new THREE.BoxGeometry(0.5, 1800, 0.5);
 
     let loc = 0;
     
@@ -159,7 +178,7 @@ function init() {
 	}
     }
 
-    const geometry = new THREE.SphereGeometry( 10, 4, 4 );
+    const geometry = new THREE.SphereGeometry( 10, 3,5 );
 
     const material = new THREE.MeshStandardMaterial( {
 	color: 0xffffff,
@@ -167,7 +186,7 @@ function init() {
 	// envMap: scene.background,
 	//refractionRatio: 0.95
 	roughness: 0.1,
-	metalness: 0.7,
+	metalness: 0.4,
     } );
 
     for( var i = 0; i < 4096; i++){
@@ -217,32 +236,66 @@ function init() {
     const audio2 = new THREE.PositionalAudio(listener); 
     const audio3 = new THREE.PositionalAudio(listener); 
 
+    const audioElement = document.getElementById( 'in' );
+    audioElement.play();
+
+    audio.setMediaElementSource( audioElement );
+    audio.setRefDistance( 2000 );
+    audio.setVolume( 1 ); 
+    //audio.setDirectionalCone( 180, 230, 0.1 );
+
+    const audioElement2 = document.getElementById( 'wpa1' );
+    audioElement2.play();
+
+    audio2.setMediaElementSource( audioElement2 );
+    audio2.setRefDistance( 2000 );
+    audio2.setVolume( 1 ); 
+    //audio2.setDirectionalCone( 180, 230, 0.1 );
+    
+    const audioElement3 = document.getElementById( 'wpa2' );
+    audioElement3.play();
+
+    audio3.setMediaElementSource( audioElement3 );
+    audio3.setRefDistance( 2000 );
+    audio3.setVolume( 1 ); 
+    //audio3.setDirectionalCone( 180, 230, 0.1 );
+    
+    
+    video.play(); 
+
     //audio.setMediaElementSource(  document.getElementById( 'music' ) );
     // audio.play(); 
     //const audioElement = document.getElementById( 'music' );
     // audioElement.play();
 
-    // const audio = new THREE.Audio( listener );
-    const audioLoader = new THREE.AudioLoader();
+    // let audio;
 
+    // const audio = new THREE.Audio( listener );
+
+    /*
+    const audioLoader = new THREE.AudioLoader();
+	  
     audioLoader.load( 'sounds/in.mp3', function( buffer ) {
+      
 	audio.setBuffer( buffer );
+
 	audio.setLoop( true );
-	audio.setRefDistance( 200 );
+	audio.setRefDistance( 2000 );
 	audio.setVolume( 1 );
 	audio.play();
-	
+
     });
 
     const audioLoader2 = new THREE.AudioLoader();
-    
+
+
     audioLoader2.load( 'sounds/wpa1.mp3', function( buffer ) {
 	audio2.setBuffer( buffer );
 	audio2.setLoop( true );
-	audio2.setRefDistance( 200 );
+	audio2.setRefDistance( 2000 );
 	audio2.setVolume( 1 );
+
 	audio2.play();
-	video.play(); 
 
     });
     
@@ -251,10 +304,12 @@ function init() {
     audioLoader3.load( 'sounds/wpa2.mp3', function( buffer ) {
 	audio3.setBuffer( buffer );
 	audio3.setLoop( true );
-	audio3.setRefDistance( 200 );
+	audio3.setRefDistance( 2000 );
 	audio3.setVolume( 1 );
 	audio3.play();
+
     });
+    */
 
 
     // const sphereS = new THREE.SphereGeometry( 5, 32, 32 );
@@ -269,6 +324,7 @@ function init() {
 	roughness: 0.4,
 	metalness: 0.8,
     } );
+
 
     /*
 
@@ -351,10 +407,9 @@ function init() {
     renderer.setSize( window.innerWidth, window.innerHeight );
 
     renderer.setScissorTest( true );
-    renderer.setAnimationLoop( render );
+    // renderer.setAnimationLoop( render );
 				
     // renderer.outputEncoding = THREE.sRGBEncoding; // rendertargetcamera
-
     document.body.appendChild( renderer.domElement );
     
     //
@@ -362,7 +417,9 @@ function init() {
     window.addEventListener( 'resize', onWindowResize);
     initSlider();
 
+
     animate(); 
+
     
 }
 
@@ -516,7 +573,7 @@ function animate() {
     camera.position.z = Math.cos( time2 * 0.25 ) * - 100; 
 
     
-    //camera.lookAt( scene.position );
+    // camera.lookAt(400, 0, 0 );
 
 
     meshS.position.x = Math.sin( time2 * 0.25 ) * 100
@@ -562,17 +619,49 @@ function animate() {
     clight4.position.z = Math.sin( time2 * 0.5/2 ) * 1400;
 
     
+    clight1R.position.x = Math.sin( time2 * 0.7/2 ) * 1400;
+    clight1R.position.y = Math.cos( time2* 0.5/2 ) * 50;
+    clight1R.position.z = Math.cos( time2 * 0.3/2 ) * 1400;
+	
+    clight2R.position.x = Math.cos( time2 * 0.3/2 ) * 1400;
+    clight2R.position.y = Math.sin( time2 * 0.5/2 ) * 50;
+    clight2R.position.z = Math.sin( time2 * 0.7/2 ) * 1400;
+	
+    clight3R.position.x = Math.cos( time2 * 0.7/2 ) * 1400;
+    clight3R.position.y = Math.cos( time2 * 0.3/2 ) * 50;
+    clight3R.position.z = Math.sin( time2 * 0.5/2 ) * 1400;
+	
+    clight4R.position.x = Math.sin( time2 * 0.3/2 ) * 1400;
+    clight4R.position.y = Math.cos( time2 * 0.7/2 ) * 50;
+    clight4R.position.z = Math.sin( time2 * 0.5/2 ) * 1400;
+
+    
     const time = performance.now();
     
     prevTime = time;
     
     // renderer.render( scene, camera );
 
-    renderer.setScissor( 0, 0, sliderPos, window.innerHeight );
+    if(contador % 1000 >= 0){
+    
+    renderer.setScissor( 0, 0, sliderPos,  window.innerHeight );
     renderer.render( sceneR, camera );
     
     renderer.setScissor( sliderPos, 0, window.innerWidth, window.innerHeight );
     renderer.render( scene, camera );
+    }
+
+    if(contador % 1000 >= 500){
+	
+    renderer.setScissor( 0, 0, sliderPos,  window.innerHeight );
+    renderer.render( scene, camera );
+    
+    renderer.setScissor( sliderPos, 0, window.innerWidth, window.innerHeight );
+    renderer.render( sceneR, camera );
+
+    }
+
+    contador++; 
     
 }
 
@@ -583,12 +672,13 @@ function onDocumentMouseMove( event ) {
     
 }
 
+/*
 function render() {
     
-    renderer.setScissor( 0, 0, sliderPos, window.innerHeight );
+    renderer.setScissor( 0, 0, sliderPos,  window.innerHeight );
     renderer.render( sceneR, camera );
     
     renderer.setScissor( sliderPos, 0, window.innerWidth, window.innerHeight );
     renderer.render( scene, camera );
 }
-
+*/
