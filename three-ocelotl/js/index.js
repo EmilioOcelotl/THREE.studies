@@ -17,8 +17,9 @@ const objects = [];
 const part = [];
 let meshS, meshS2, meshS3; 
 
-let clight1, clight2, clight3, clight4; 
-
+let clight1, clight2, clight3, clight4;
+let algo;
+    
 let clight1R, clight2R, clight3R, clight4R; 
         
 let raycaster;
@@ -94,26 +95,49 @@ function init() {
     camera.lookAt(200, 0, 0); 
     
     scene = new THREE.Scene();
-    scene.background = new THREE.Color(  0x000000 );
+    // scene.background = new THREE.Color(  0x000000 );
 
     sceneR = new THREE.Scene();
-    sceneR.background = new THREE.Color( 0x000000 );
+    //scene.background = new THREE.Color( 0x000000 );
 
     //scene.background = new THREE.Color( 0xff0000 );
     
     controls = new OrbitControls( camera, renderer.domElement );
     controls.maxDistance = 300;
 
+
+    const path = 'img/';
+    const format = '.png';
+    const urls = [
+	path + 'px' + format, path + 'nx' + format,
+	path + 'py' + format, path + 'ny' + format,
+	path + 'pz' + format, path + 'nz' + format
+    ];
+    
+    const reflectionCube = new THREE.CubeTextureLoader().load( urls );
+    const refractionCube = new THREE.CubeTextureLoader().load( urls );
+    refractionCube.mapping = THREE.CubeRefractionMapping;
+    
+    //scene = new THREE.Scene();
+    //scene.background = reflectionCube;
+    // sceneR.background = reflectionCube; 
     ////////////////////////////////////////////////////
 
-    const geometry2 = new THREE.PlaneGeometry( 192, 108 );
-    const material2 = new THREE.MeshStandardMaterial( {color: 0xffffff, side: THREE.DoubleSide, roughness: 0.99, metalness: 0.4} );
+    const geometry2 = new THREE.PlaneGeometry( 192*2, 108*2 );
+    const material2 = new THREE.MeshBasicMaterial( {color: 0xffffff,
+						    side: THREE.DoubleSide,
+						    //roughness: 0.99,
+						    // metalness: 0.1
+						    depthTest: false
+						   } );
 
     material2.map = new THREE.VideoTexture( video );
 
     plane2 = new THREE.Mesh( geometry2, material2 );
     sceneR.add( plane2 );
-        
+    // sceneR.add(plane2); 
+    plane2.renderOrder = 10000;
+
     let rojo = new THREE.Color( 0x711c91 );
     let verde = new THREE.Color( 0xea00d9 ); 
     let azul = new THREE.Color( 0x0adbc6 ); 
@@ -121,16 +145,11 @@ function init() {
     let blanco = new THREE.Color ( 0xffffff); 
 
    
-    clight1 = new THREE.PointLight(blanco, 3)
-    clight2 = new THREE.PointLight(blanco, 3)
-    clight3 = new THREE.PointLight(blanco,3)
-    clight4 = new THREE.PointLight(blanco, 3)
+    clight1 = new THREE.PointLight(blanco, 0.5)
+    clight2 = new THREE.PointLight(blanco, 0.5)
+    clight3 = new THREE.PointLight(blanco,0.5)
+    clight4 = new THREE.PointLight(blanco, 0.5)
 
-    clight1R = new THREE.PointLight(blanco, 0.5)
-    clight2R = new THREE.PointLight(blanco, 0.5)
-    clight3R = new THREE.PointLight(blanco, 0.5)
-    clight4R = new THREE.PointLight(blanco, 0.5)
-    
     /*
     clight1 = new THREE.PointLight(blanco, 0.2)
     clight2 = new THREE.PointLight(blanco, 0.2)
@@ -138,26 +157,23 @@ function init() {
     clight4 = new THREE.PointLight(blanco, 0.2)
 */
 
-    scene.add( clight1R )
-    scene.add( clight2R )
-    scene.add( clight3R )
-    scene.add( clight4R )
+    scene.add( clight1 )
+    scene.add( clight2 )
+    scene.add( clight3 )
+    scene.add( clight4 )
 
-    sceneR.add( clight1 )
-    sceneR.add( clight2 )
-    sceneR.add( clight3 )
-    sceneR.add( clight4 )
 
-    
+    const pilaresMaterial = new THREE.MeshBasicMaterial( { color: 0xffffff, envMap: refractionCube, refractionRatio: 0.95 } );
+/*
     let pilaresMaterial = new THREE.MeshStandardMaterial( {
 	color: 0xffffff,
-	envMap: scene.background,
 	// refractionRatio: 0.75
 	roughness: 0.4,
 	metalness: 0.4
     } );
+*/
     
-    const pilargeom = new THREE.BoxGeometry(0.5, 1800, 0.5);
+    const pilargeom = new THREE.BoxGeometry(2, 1800, 2);
 
     let loc = 0;
     
@@ -174,20 +190,26 @@ function init() {
 	    
 	    bamboo[loc].position.set(r1 * Math.sin(ang), 10, r2 *Math.cos(ang) )
 	    scene.add(bamboo[loc])
+	     //sceneR.add(bamboo[loc])
 	    loc++; 
 	}
     }
 
-    const geometry = new THREE.SphereGeometry( 10, 3,5 );
+    const geometry = new THREE.SphereGeometry( 10, 1, 2 );
 
+  
     const material = new THREE.MeshStandardMaterial( {
 	color: 0xffffff,
-	// side: THREE.DoubleSide,
-	// envMap: scene.background,
-	//refractionRatio: 0.95
+	side: THREE.DoubleSide,
+	//envMap: scene.background,
+	refractionRatio: 0.7,
 	roughness: 0.1,
-	metalness: 0.4,
+	metalness: 0.9,
+	envMap: refractionCube
     } );
+   
+
+  //   const material= new THREE.MeshLambertMaterial( { color: 0xffffff, envMap: reflectionCube, combine: THREE.MixOperation, reflectivity: 0.6, refractionRatio: 0.99 } );
 
     for( var i = 0; i < 4096; i++){
 	    
@@ -220,9 +242,9 @@ function init() {
 	part[i].rotation.y = Math.PI * Math.random(); 
 	part[i].rotation.z = Math.PI * Math.random();
 
-	part[i].scale.x = Math.random() * 0.125/2; 
-	part[i].scale.y = Math.random() * 0.25/ 2; 
-	part[i].scale.z = Math.random() * 0.25/2; 
+	part[i].scale.x = Math.random() * 0.25 ; 
+	part[i].scale.y = Math.random() * 0.25 ; 
+	part[i].scale.z = Math.random() * 0.25 ; 
 	
 	scene.add( part[i] );
 
@@ -334,9 +356,9 @@ function init() {
 	reflectivity: 1
     } );
     */
-    meshS = new THREE.Mesh( sphereS, materialCam );
-    meshS2 = new THREE.Mesh( sphereS, materialCam );
-    meshS3 = new THREE.Mesh( sphereS, materialCam );
+    meshS = new THREE.Mesh( sphereS, material );
+    meshS2 = new THREE.Mesh( sphereS, material );
+    meshS3 = new THREE.Mesh( sphereS, material );
 
     scene.add( meshS );
     scene.add( meshS2 );
@@ -480,6 +502,7 @@ function initSlider() {
     
 }
 
+
 function animate() {
     
     requestAnimationFrame( animate );
@@ -618,23 +641,8 @@ function animate() {
     clight4.position.y = Math.cos( time2 * 0.7/2 ) * 50;
     clight4.position.z = Math.sin( time2 * 0.5/2 ) * 1400;
 
+    contador++; 
     
-    clight1R.position.x = Math.sin( time2 * 0.7/2 ) * 1400;
-    clight1R.position.y = Math.cos( time2* 0.5/2 ) * 50;
-    clight1R.position.z = Math.cos( time2 * 0.3/2 ) * 1400;
-	
-    clight2R.position.x = Math.cos( time2 * 0.3/2 ) * 1400;
-    clight2R.position.y = Math.sin( time2 * 0.5/2 ) * 50;
-    clight2R.position.z = Math.sin( time2 * 0.7/2 ) * 1400;
-	
-    clight3R.position.x = Math.cos( time2 * 0.7/2 ) * 1400;
-    clight3R.position.y = Math.cos( time2 * 0.3/2 ) * 50;
-    clight3R.position.z = Math.sin( time2 * 0.5/2 ) * 1400;
-	
-    clight4R.position.x = Math.sin( time2 * 0.3/2 ) * 1400;
-    clight4R.position.y = Math.cos( time2 * 0.7/2 ) * 50;
-    clight4R.position.z = Math.sin( time2 * 0.5/2 ) * 1400;
-
     
     const time = performance.now();
     
@@ -642,27 +650,13 @@ function animate() {
     
     // renderer.render( scene, camera );
 
-    if(contador % 1000 >= 0){
-    
     renderer.setScissor( 0, 0, sliderPos,  window.innerHeight );
     renderer.render( sceneR, camera );
     
     renderer.setScissor( sliderPos, 0, window.innerWidth, window.innerHeight );
     renderer.render( scene, camera );
-    }
 
-    if(contador % 1000 >= 500){
-	
-    renderer.setScissor( 0, 0, sliderPos,  window.innerHeight );
-    renderer.render( scene, camera );
-    
-    renderer.setScissor( sliderPos, 0, window.innerWidth, window.innerHeight );
-    renderer.render( sceneR, camera );
-
-    }
-
-    contador++; 
-    
+       
 }
 
 function onDocumentMouseMove( event ) {
