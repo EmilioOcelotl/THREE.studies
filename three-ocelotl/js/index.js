@@ -2,6 +2,7 @@
 import * as THREE from '/js/three/build/three.module.js';
 import {PointerLockControls} from '/js/three/examples/jsm/controls/PointerLockControls.js';
 import {OrbitControls} from '/js/three/examples/jsm/controls/OrbitControls.js'; 
+import {ImprovedNoise} from '/js/three/examples/jsm/math/ImprovedNoise.js'; 
 
 //import * as THREE from '../build/three.module.js';
 //import { PointerLockControls } from './jsm/controls/PointerLockControls.js';
@@ -211,10 +212,13 @@ function init() {
 
   //   const material= new THREE.MeshLambertMaterial( { color: 0xffffff, envMap: reflectionCube, combine: THREE.MixOperation, reflectivity: 0.6, refractionRatio: 0.99 } );
 
+
+    
+	// const d = perlin.noise(i * 1); 
+
     for( var i = 0; i < 4096; i++){
 	    
 	part[i] = new THREE.Mesh(geometry, material); 
-
 	var posX, posY, posZ;
 	
 	var theta1 = Math.random() * (Math.PI*2);
@@ -224,11 +228,18 @@ function init() {
 	posY = Math.sin(theta1);
 	posZ = Math.cos(theta1) * Math.sin(theta2);
 
-	let radio = Math.random() * 2;
+	/*
+	const d = perlin.noise(i / 100 * Math.random(), i /100 * Math.random(),  i / 100 * Math.random()); 
+	const e = perlin.noise(i / 100 * Math.random(), i /100 * Math.random(),  i / 100 * Math.random()); 
+
+	console.log(Math.abs(d) * 100); 
 	
-	pX[i] = posX * 50 * radio;
-	pY[i] = posY * 50 * radio;
-	pZ[i] = posZ * 50 * radio; 
+	*/ 
+	let radio = 50;
+	
+	pX[i] = posX * radio ; 
+	pY[i] = posY * radio ;
+	pZ[i] = posZ * radio ; 
 	
 	//pX[i] = Math.random() * 20 -10 ;
 	//pY[i] = Math.random() * 20 -10 ;
@@ -242,9 +253,9 @@ function init() {
 	part[i].rotation.y = Math.PI * Math.random(); 
 	part[i].rotation.z = Math.PI * Math.random();
 
-	part[i].scale.x = Math.random() * 0.25 ; 
-	part[i].scale.y = Math.random() * 0.25 ; 
-	part[i].scale.z = Math.random() * 0.25 ; 
+	part[i].scale.x = Math.random() * 0.125 ; 
+	part[i].scale.y = Math.random() * 0.125 ; 
+	part[i].scale.z = Math.random() * 0.125 ; 
 	
 	scene.add( part[i] );
 
@@ -538,15 +549,21 @@ function animate() {
     // plane2.rotation.y = Math.cos( time2 * 0.125 ) * 0.001; 
     // plane2.position.z = -Math.cos( time2 * 0.25 ) * - 100; 
 
+    const perlin = new ImprovedNoise();
       
     for(let i = 0; i < 4096; i++){
 
 	hola = noise.get(noiseStep) * 1;
+	 const rraand= Math.random() 
+	let d, e, f; 
+	d = perlin.noise(pX[i]* 0.001 + time2 , pY[i], pZ[i]) * 8; 
 
+	// console.log(d); 
 	//part[i].position.x = pX[i] * (data [i%128]*10000) + hola - 25;
-	part[i].position.x = lerp(pX[i], pX[i] * (data [i%32]*800), 0.0001)  ; 
-	part[i].position.y = lerp(pY[i], pY[i] * (data2 [i%32]*800), 0.0001) ; 
-	part[i].position.z = lerp(pZ[i], pZ[i] * (data3 [i%32]*800), 0.0001) ; 
+	part[i].position.x = lerp(pX[i], pX[i] * (data[i%64]*800), 0.0001)*d  ; 
+	// part[i].position.x = lerp(pX[i], pX[i] * (data  [i%64]*2000), 0.0001) ; 
+	part[i].position.y = lerp(pY[i], pY[i] * (data2 [i%64]*800), 0.0001) *d; 
+	part[i].position.z = lerp(pZ[i], pZ[i] * (data3 [i%64]*800), 0.0001) *d; 
 
 	//part[i].position.x = pX[i] * (1+data [i%512] /2) ;
 	//part[i].position.y = pY[i] * (1+data2[i%512] /2); 
@@ -562,10 +579,10 @@ function animate() {
 
 	// part[i].scale.z = 0.00125 + 1 * ( data[i%32] / 128); 
 
+    noiseStep = noiseStep + 0.001; 
 
     }
 
-    noiseStep+=0.001; 
 
     /*
     meshS.visible = false;
