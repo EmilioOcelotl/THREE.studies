@@ -63,6 +63,7 @@ function isMobile() {
 }
 
 const mobile = isMobile();
+const perlin = new ImprovedNoise(); // pase esto al inicio, si no funciona, va en animate
 
 let plane2; 
 // init();
@@ -548,8 +549,6 @@ function animate() {
 
     // plane2.rotation.y = Math.cos( time2 * 0.125 ) * 0.001; 
     // plane2.position.z = -Math.cos( time2 * 0.25 ) * - 100; 
-
-    const perlin = new ImprovedNoise();
       
     for(let i = 0; i < 4096; i++){
 
