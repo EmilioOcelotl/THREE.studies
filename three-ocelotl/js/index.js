@@ -610,10 +610,8 @@ function animate() {
     //camera.rotation.x = Math.sin( time2 * 0.25 ) * ( 75 + Math.sin( time2 * 0.5 )* 0.1) * 0.125; 
     camera.rotation.y = Math.cos( time2 * 0.125 ) * 0.001; 
     camera.position.z = Math.cos( time2 * 0.25 ) * - 100; 
-
     
     // camera.lookAt(400, 0, 0 );
-
 
     meshS.position.x = Math.sin( time2 * 0.25 ) * 100
     meshS.position.y = Math.sin( time2 * 0.125 ) * 50
