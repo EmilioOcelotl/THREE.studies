@@ -29,4 +29,8 @@
 
 - Escenario (luces, cámara y otras cosas como efectos )
 - Interacción para video final
-- Créditos    
+- Créditos
+
+## Referencias
+
+- https://github.com/marek-simonik/record3d-wifi-streaming-and-rgbd-mp4-3d-video-demo
