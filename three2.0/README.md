@@ -10,11 +10,11 @@
 - ¿ Sintetizadores audio reactivos en tiempo real?
 - Coinciliar la idea de granos y la captura de la imagen
 - No perder la dimensión escrita del código. ¿Una capa superior a la imagen que de cuenta de procesos fijados (que en el futuro podrían ser transformados dinámicamente? 
+- Retroalimentación en distintos momentos 
 
 ## Grabación
 
-- Hace falta: interfaz de audio y cables    
-- Grabar canales separados ( idealmente 5 ) 
+- Grabación estéreo 
 
 ## Procesamiento
 
