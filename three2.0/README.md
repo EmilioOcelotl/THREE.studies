@@ -31,6 +31,13 @@
 - Interacción para video final
 - Créditos
 
+## Pendientes
+
+- [ ] Distinción y relación entre live y fija
+- [ ] fft
+- [ ] Versión mouse y gamepad
+- [ ] Estadísticas 
+
 ## Referencias
 
 - https://github.com/marek-simonik/record3d-wifi-streaming-and-rgbd-mp4-3d-video-demo
