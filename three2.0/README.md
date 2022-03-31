@@ -14,7 +14,7 @@
 
 ## Grabación
 
-- Grabación estéreo 
+- Grabación estéreo > audios mono 
 
 ## Procesamiento
 

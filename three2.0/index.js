@@ -9,15 +9,16 @@ const OSC = require('osc-js'); // pal osc
 const osc = new OSC();
 osc.open();
 
-// init();
- 
-/*
+
+/* 
 document.querySelector('button').addEventListener('click', async () => {
     // console.log('audio is ready')   
-    // await Tone.start();   
+    await Tone.start();   
     init();
 })
 */
+
+// init();
 
 let camera, scene, renderer;
 let light, light2;
@@ -43,6 +44,7 @@ const clock = new THREE.Clock();
 let an1, an2, an3; 
 let mic;
 
+
 let pX = [];
 let pY = [];
 let pZ = []; 
@@ -57,7 +59,15 @@ let controls;
 
 let aButton = false; 
 
-init();
+Tone.start().then( (x) => init());
+
+let fuentes;
+
+let meshpX = [];
+let meshpY = [];
+let meshpZ = []; 
+
+// init();
 
 function init(){
 
@@ -123,17 +133,41 @@ function init(){
     }
     
     an1 = new Tone.Analyser('fft', 32 ); 
-    an1.smoothing = 0.9; 
-    
+    an1.smoothing = 0.8; 
+     
+    an2 = new Tone.Analyser('fft', 32 ); 
+    an2.smoothing = 0.99; 
+ 
+    an3 = new Tone.Analyser('fft', 32 ); 
+    an3.smoothing = 0.99; 
+
+    /*
     mic = new Tone.UserMedia(); // Tendrá que ver con el volumen ? 
     
     mic.open().then(() => {
 	mic.connect( an1 ); 
     });
+    */ 
+
+    fuentes = new Tone.Players({
+	"0": "audio/cello.wav",
+	"1": "audio/wpa1.wav",
+	"2": "audio/wpa2.wav",
+	"3": "audio/mezclaFinal.mp3"
+    }).toDestination();
+
+    fuentes.player('0').connect( an1 ); 
+    fuentes.player('1').connect( an2 ); 
+    fuentes.player('2').connect( an3 ); 
+    
+    // fuentes.player("2").start(5);
     
     part();
     oscSend(); 
     animate();
+
+    
+
     
 }
 
@@ -145,6 +179,11 @@ function onWindowResize() {
 
 function objeto (children){
     console.log(obj.children[children]);
+    
+    fuentes.player('0').start(0); 
+    fuentes.player('1').start(0); 
+    fuentes.player('2').start(0); 
+
     gltfBool = true;
     scene.add(obj.children[children].clone() );
 }
@@ -158,6 +197,8 @@ function render() {
 
     var pads = navigator.getGamepads();
 
+    // console.log(pads);
+    
     if(pads[1]){
 	
 	// console.log(pads[1].axes[0]);
@@ -165,9 +206,9 @@ function render() {
 	// controls.rotation.x = pads[1].axes[0] * 100  ;
 	// camera.rotation.y = Math.cos(pads[1].axes[1])  ;
 
-	camera.position.x += ( (pads[1].axes[0]*100) - camera.position.x ) * .25 * Math.cos( 0.25 );
-	camera.position.y += ( - (pads[1].axes[1]*100) - camera.position.y ) * .25;
-	camera.position.z +=  ( (pads[1].axes[3]*200) - camera.position.z ) * .25 * Math.cos( 0.25 ); 
+	camera.position.x += ( (pads[1].axes[0]*500) - camera.position.x ) * .25 * Math.cos( 0.25 );
+	camera.position.y += ( - (pads[1].axes[1]*500) - camera.position.y ) * .25;
+	camera.position.z +=  ( (pads[1].axes[3]*500) - camera.position.z ) * .25 * Math.cos( 0.25 ); 
 	
 	if(pads[1].buttons[7].pressed == true){ // algún tipo de protección para que no se repiita
 
@@ -183,14 +224,23 @@ function render() {
 	    scene.add(obj.children[contAnim].clone() ); 
 	    scene.children[3].rotation.y = Math.PI;
 	    scene.children[3].position.z = -8;
-	    scene.children[3].material.size = 1.1;
+	    scene.children[3].position.x = 4;
+	    scene.children[3].material.size = 0.125;
+	    // scene.children[3].material.blending = THREE.AdditiveBlending;
 	    scene.children[3].scale.x = 32;
 	    scene.children[3].scale.y = 32;
 	    scene.children[3].scale.z = 32; 
-	    
+
+	    console.log(scene.children[3].material.map)
 	    scene.children[2].geometry.attributes.color.needsUpdate = true;
 	    
 	    // esto podría estar asociado a un botón 
+
+	    for(let i = 0; i < scene.children[3].geometry.attributes.position.count; i++){
+		meshpX[i] = scene.children[3].geometry.attributes.position.getX(i);
+		meshpY[i] = scene.children[3].geometry.attributes.position.getY(i);
+		meshpZ[i] = scene.children[3].geometry.attributes.position.getZ(i);
+	    }
 	    
 	    for(let i = 0; i < scene.children[2].geometry.attributes.color.count; i++){
 		
@@ -206,19 +256,20 @@ function render() {
 	
     const time = Date.now() * 0.0005;
     const delta = clock.getDelta();
-    
+
     if(gltfBool){
 	scene.children[3].geometry.computeVertexNormals(); 
 	let perlin = new ImprovedNoise();
-	let d = 0; 
+ 
 	for( var i = 0; i < scene.children[3].geometry.attributes.position.count; i++){
-	    d = perlin.noise(scene.children[3].geometry.attributes.position.getX(i)*4+time,
-			     scene.children[3].geometry.attributes.position.getY(i)*4+time,
-			     scene.children[3].geometry.attributes.position.getZ(i)*4+time) * 0.01	    
-	    scene.children[3].geometry.attributes.position.setX(i, scene.children[3].geometry.attributes.position.getX(i) * (d+1));
-	    scene.children[3].geometry.attributes.position.setY(i, scene.children[3].geometry.attributes.position.getY(i) * (d+1));
-	    scene.children[3].geometry.attributes.position.setZ(i, scene.children[3].geometry.attributes.position.getZ(i) * (d+1));
-	    
+	    let d = perlin.noise(scene.children[3].geometry.attributes.position.getX(i)*8+time,
+				 scene.children[3].geometry.attributes.position.getY(i)*8+time,
+				 scene.children[3].geometry.attributes.position.getZ(i)*8+time ) * 0.1
+
+	    scene.children[3].geometry.attributes.position.setX(i, meshpX[i] * (d+1));
+	    scene.children[3].geometry.attributes.position.setY(i, meshpY[i] * (d+1));
+	    scene.children[3].geometry.attributes.position.setZ(i, meshpZ[i] * (d+1));
+
 	}
 
 	scene.children[3].geometry.attributes.position.needsUpdate = true;
@@ -228,21 +279,28 @@ function render() {
 	// console.log((Tone.dbToGain(pos[10])) *10000000); 	
 	// console.log( Tone.dbToGain(an1.getValue()[0]) *100 ); 
 	
-	d = 0; 
-	
 	for( var i = 0; i < scene.children[2].geometry.attributes.position.count; i++){
+	   
 	    
 	    //let pos = an1.getValue();
 	    // console.log(Tone.dbToGain(pos[100])); 
 	    //console.log(Tone.dbToGain(pos[10])); 
 
-	    d = perlin.noise(scene.children[2].geometry.attributes.position.getX(i)*0.02+time,
-			     scene.children[2].geometry.attributes.position.getY(i)*0.02+time,
-			     scene.children[2].geometry.attributes.position.getZ(i)*0.02+time) * 4	    
-	    scene.children[2].geometry.attributes.position.setX(i, (4+d)* pX[i]  * (Tone.dbToGain(an1.getValue()[i%32] ) * -2000)+1) 
-	    scene.children[2].geometry.attributes.position.setY(i, (4+d)* pY[i]  * (Tone.dbToGain(an1.getValue()[i%32] ) * -2000)+1) ;
-	    scene.children[2].geometry.attributes.position.setZ(i, (4+d)* pZ[i]  * (Tone.dbToGain(an1.getValue()[i%32] ) * -2000)+1) ;
+	    let d = perlin.noise(scene.children[2].geometry.attributes.position.getX(i)*(Tone.dbToGain(an1.getValue()[i%32] )*500)+time,
+				 scene.children[2].geometry.attributes.position.getY(i)*(Tone.dbToGain(an2.getValue()[i%32] )*500)+time,
+				 scene.children[2].geometry.attributes.position.getZ(i)*(Tone.dbToGain(an3.getValue()[i%32] )*500)+time) * 1	    
 
+	    /*
+	    scene.children[2].geometry.attributes.position.setX(i,  (d+1) * pX[i]  * (Tone.dbToGain(an1.getValue()[i%32] ) * 200)* 10) 
+	    scene.children[2].geometry.attributes.position.setY(i,  (d+1) * pY[i]  * (Tone.dbToGain(an2.getValue()[i%32] ) * 400)*10) ;
+	    scene.children[2].geometry.attributes.position.setZ(i,  (d+1) * pZ[i]  * (Tone.dbToGain(an3.getValue()[i%32] ) * 400)*10) ;
+
+*/
+	    scene.children[2].geometry.attributes.position.setX(i,  (d+1) * pX[i] ) 
+	    scene.children[2].geometry.attributes.position.setY(i,  (d+1) * pY[i] ) ;
+	    scene.children[2].geometry.attributes.position.setZ(i,  (d+1) * pZ[i] ) ;
+
+	    
 	}
 	
 	scene.children[2].geometry.attributes.position.needsUpdate = true;
@@ -273,7 +331,7 @@ function onDocumentMouseMove( event ) {
 
 function part(){
 
-    for( var i = 0; i < 4096; i++){
+    for( var i = 0; i < 8000; i++){
 
 	var posX, posY, posZ;
 	
@@ -284,13 +342,13 @@ function part(){
 	posY = Math.sin(theta1);
 	posZ = Math.cos(theta1) * Math.sin(theta2);
 	
-	let radio =70; 
+	let radio =45; 
 	
 	pX[i] = posX * radio ; 
 	pY[i] = posY * radio ;
 	pZ[i] = posZ * radio ; 
 	
-	vertices.push(posX * radio, posY*radio, posZ*radio+16);
+	vertices.push(posX * radio, posY*radio, posZ*radio);
 	colores.push(0, 0, 0); 
 	    
     }
@@ -298,10 +356,13 @@ function part(){
     pGeo = new THREE.BufferGeometry();
     pGeo.setAttribute( 'position', new THREE.Float32BufferAttribute( vertices, 3 ) );
     pGeo.setAttribute( 'color', new THREE.Float32BufferAttribute( colores, 3 ) );
-    pMat = new THREE.PointsMaterial( { color: 0xffffff, vertexColors: true, blending: THREE.AdditiveBlending } );
+    pMat = new THREE.PointsMaterial( { color: 0xffffff, vertexColors: true } );
     pointsPart = new THREE.Points( pGeo, pMat );
-    pMat.size = 0.75;
+    pMat.size =0.6;
+    pointsPart.position.z = 20; 
     scene.add( pointsPart );
+
+    
     
 }
 

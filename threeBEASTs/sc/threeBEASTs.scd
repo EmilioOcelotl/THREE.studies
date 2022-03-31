@@ -30,6 +30,7 @@ MIDIIn.connectAll;
 // Esperar poquito
 s.scope;
 s.meter;
+p = ProxySpace.push(s.boot)
 // p.makeTempoClock((110/120));
 // p.quant = 4;
 PirE.loadSamples();
