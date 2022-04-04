@@ -42,8 +42,6 @@ let contAnim = 0;
 
 const clock = new THREE.Clock();
 
-// Analizador para audio in y para wpas
-
 let an1, an2, an3; 
 let mic;
 
@@ -71,20 +69,14 @@ var onsetdetector;
 let prueba = false; 
 let prueba2 = false; 
 
-onsetdetector = new MMLLOnsetDetector(); //default threshold 0.34
-
-console.log(onsetdetector); 
-
+//onsetdetector = new MMLLOnsetDetector(); //default threshold 0.34
+//console.log(onsetdetector); 
 // init();
-
-// fuentes.player("2").start(5);
 
 an1 = new Tone.Analyser('fft', 32 ); 
 an1.smoothing = 0.8; 
-
 an2 = new Tone.Analyser('fft', 32 ); 
 an2.smoothing = 0.99; 
-
 an3 = new Tone.Analyser('fft', 32 ); 
 an3.smoothing = 0.99; 
 
@@ -114,6 +106,8 @@ let coloresMesh;
 
 let detection; 
 let contMesh = 0; 
+
+let fondo = false; 
 
 function init(){
     
@@ -288,7 +282,6 @@ function render() {
 	camera.position.y += ( - (pads[0].axes[1]*50) - camera.position.y ) * .25;
 	camera.position.z +=  ( (pads[0].axes[3]*20) - camera.position.z ) * .25 * Math.cos( 0.25 );
 	
-	
 	if( pads[0].buttons[7].pressed){
 
 	    if(contMesh == meshes.length){
@@ -311,8 +304,13 @@ function render() {
 	}
 
 	if( pads[0].buttons[6].pressed ) {
+	    fondo = !fondo;
+	    if(fondo){
+		scene.background = new THREE.Color(0xffffff); 
+	    } else {
+		scene.background = new THREE.Color(0x000000); 
+	    }
 	}
-	
     }
     
     // controls.rotation.x = pads[1].axes[0] * 100  ;
