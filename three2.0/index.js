@@ -68,6 +68,8 @@ let meshpY = [];
 let meshpZ = []; 
 
 var onsetdetector;
+let prueba = false; 
+let prueba2 = false; 
 
 onsetdetector = new MMLLOnsetDetector(); //default threshold 0.34
 
@@ -111,6 +113,7 @@ let meshes = [];
 let coloresMesh; 
 
 let detection; 
+let contMesh = 0; 
 
 function init(){
     
@@ -161,11 +164,11 @@ function init(){
     scene = new THREE.Scene();
     // scene.background = new THREE.Color(0xffffff); 
 
-    light = new THREE.PointLight( 0xffffff,1 );
+    light = new THREE.PointLight( 0xffffff, 0.25 );
     light.position.set( 0, 0, -2 );
     scene.add( light );
     
-    light2 = new THREE.PointLight( 0xffffff, 1 );
+    light2 = new THREE.PointLight( 0xffffff, 0.25 );
     light2.position.set( 0, 0, -2 );
     scene.add( light2 );
     
@@ -180,33 +183,14 @@ function init(){
 	mic.connect( an1 ); 
     });
     */ 
-    // fuentes.volume.value = -6; 
 
     part();
     
     // 523 
     
+    // let contMesh = 0; 
 
-    // console.log(meshes[1]); 
-	    // scene.add(meshes[0]);
-    
     /*
-    loader.load(
-	  'cap/0000000.gltf', 
-	function ( gltf ) {
-	    gltfBool = true;
-	    scene.add(gltf.scene.children[0]); 
-	    objeto(); 
-	    clonadx = scene.children[3].clone(); 
-	    obj.scale.x = 4;
-	    obj.scale.y = 4;
-	    obj.scale.z = 4;
-	    obj.rotation.y = Math.PI;
-	})
-    */
-
-    let contMesh = 0; 
-    
     loopOf = new Tone.Loop((time) => {
 
 	if(contMesh == meshes.length){
@@ -222,13 +206,12 @@ function init(){
 	meshes[contMesh].scale.z = 16;
 	meshes[contMesh].rotation.y = Math.PI;
 	meshes[contMesh].material.roughness = 0.2; 
-	meshes[contMesh].material.metalness = 0.2; 
-		
+	meshes[contMesh].material.metalness = 0.2; 	
 	clonadx = meshes[contMesh].clone(); 
-
 	scene.add(meshes[contMesh]); 
 	
     }, "0.77");
+    */
     
     objeto(); 
 
@@ -246,12 +229,7 @@ function init(){
     window.addEventListener( 'resize', onWindowResize );
     // oscSend(); 
     animate();
-
-    
-
-    
 }
-
 
 function onWindowResize() {
     camera.aspect = window.innerWidth / window.innerHeight;
@@ -260,27 +238,18 @@ function onWindowResize() {
 }
 
 async function objeto (){
-
-    // console.log(obj);
-
     await sonido(); 
-    
 }
-
-// Más tiempo para la animación
 
 function sonido(){
 
     return new Promise(resolve => {
 	setTimeout(() => {
-
 	    dosTres(); 
-	    
 	    fuentes.player('0').start();
 	    fuentes.player('1').start();
 	    fuentes.player('2').start();
-	    
-	}, 30000);
+	}, 10000);
 
     });
 }
@@ -292,17 +261,14 @@ async function dosTres(){
 function ochoSegundos(){
        return new Promise(resolve => {
 	setTimeout(() => {
-
 	    console.log(meshes); 
-	    scene.add(meshes[1]);
-
-	    Tone.Transport.start();
-	    loopOf.start(0);
-	    console.log(scene);
+	    scene.add(meshes[0]);
+	    clonadx = meshes[contMesh].clone(); 
+	    //Tone.Transport.start();
+	    // loopOf.start(0);
+	    // console.log(scene);
 	    gltfBool= true; 
-	    
 	}, 8239);
-
     });
 }
 
@@ -313,31 +279,47 @@ function animate(){
 
 function render() {
 
-
     // console.log(scene.children[3]); 
     var pads = navigator.getGamepads();
+    
+    if(pads[0]){
+	// console.log(pads[1].axes[0]);
+	camera.position.x += ( (pads[0].axes[0]*50) - camera.position.x ) * .25 * Math.cos( 0.25 );
+	camera.position.y += ( - (pads[0].axes[1]*50) - camera.position.y ) * .25;
+	camera.position.z +=  ( (pads[0].axes[3]*20) - camera.position.z ) * .25 * Math.cos( 0.25 );
+	
+	
+	if( pads[0].buttons[7].pressed){
 
-    // console.log(pads);
+	    if(contMesh == meshes.length){
+		contMesh = 0;
+		console.log("reseteo");
+		loopOf.stop(); 
+	    }
 
-    /*
-    if(pads[1]){
+	    // console.log("holaaaaa");
+	    scene.remove(meshes[contMesh]); 
+	    contMesh++;
+	    meshes[contMesh].scale.x = 16;
+	    meshes[contMesh].scale.y = 16;
+	    meshes[contMesh].scale.z = 16;
+	    meshes[contMesh].rotation.y = Math.PI;
+	    meshes[contMesh].material.roughness = 0.2; 
+	    meshes[contMesh].material.metalness = 0.8; 	
+	    clonadx = meshes[contMesh].clone(); 
+	    scene.add(meshes[contMesh]);    
+	}
 
-	console.log(pads[1].axes[0]);
-	camera.position.x += ( (pads[1].axes[0]*500) - camera.position.x ) * .25 * Math.cos( 0.25 );
-	camera.position.y += ( - (pads[1].axes[1]*500) - camera.position.y ) * .25;
-	camera.position.z +=  ( (pads[1].axes[3]*500) - camera.position.z ) * .25 * Math.cos( 0.25 ); 
-
+	if( pads[0].buttons[6].pressed ) {
+	}
+	
     }
-
-    */
     
     // controls.rotation.x = pads[1].axes[0] * 100  ;
     // camera.rotation.y = Math.cos(pads[1].axes[1])  ;
     
-    
-    // if(pads[1].buttons[7].pressed == true){ // algún tipo de protección para que no se repiita
-
     if(gltfBool){
+
 	
 	aButton = true; 
     	for(let i = 0; i < scene.children[3].geometry.attributes.position.count; i++){
@@ -354,10 +336,11 @@ function render() {
 								  coloresMesh.children[0].geometry.attributes.color.getX(i),
 								  coloresMesh.children[0].geometry.attributes.color.getY(i),
 								  coloresMesh.children[0].geometry.attributes.color.getZ(i));   		    
-	    }  
-    // const time = Date.now() * 0.0005;
-    //const delta = clock.getDelta();
 
+	}  
+
+	/////////////// MESH 
+	
 	const time = Date.now() * 0.0005;
 	const delta = clock.getDelta();
 	
@@ -367,9 +350,9 @@ function render() {
 	// let perlin = new ImprovedNoise();
  
 	for( var i = 0; i < scene.children[3].geometry.attributes.position.count; i++){
-	    let d = perlin.noise(scene.children[3].geometry.attributes.position.getX(i)*(Tone.dbToGain(an1.getValue()[i%32] )*50000)+time,
-				 scene.children[3].geometry.attributes.position.getY(i)*(Tone.dbToGain(an1.getValue()[i%32] )*50000)+time,
-				 scene.children[3].geometry.attributes.position.getZ(i)*(Tone.dbToGain(an1.getValue()[i%32] )*50000)+time ) * 0.05
+	    let d = perlin.noise(scene.children[3].geometry.attributes.position.getX(i)*2+time,
+				 scene.children[3].geometry.attributes.position.getY(i)*2+time,
+				 scene.children[3].geometry.attributes.position.getZ(i)*2+time ) * 0.1
 	    
 	    scene.children[3].geometry.attributes.position.setX(i, meshpX[i] * (d+1));
 	    scene.children[3].geometry.attributes.position.setY(i, meshpY[i] * (d+1));
@@ -380,28 +363,18 @@ function render() {
 	scene.children[3].geometry.attributes.position.needsUpdate = true;
     	scene.children[3].geometry.computeVertexNormals(); 
 
-	// PARTICULAS ///
+	////////////////// PARTICULAS 
 	
 	for( var i = 0; i < scene.children[2].geometry.attributes.position.count; i++){
 	   	    
-	    //let pos = an1.getValue();
-	    // console.log(Tone.dbToGain(pos[100])); 
-	    //console.log(Tone.dbToGain(pos[10])); 
-
 	    let d = perlin.noise(scene.children[2].geometry.attributes.position.getX(i)*(Tone.dbToGain(an1.getValue()[i%32] )*5000)+time,
 				 scene.children[2].geometry.attributes.position.getY(i)*(Tone.dbToGain(an2.getValue()[i%32] )*5000)+time,
 				 scene.children[2].geometry.attributes.position.getZ(i)*(Tone.dbToGain(an3.getValue()[i%32] )*5000)+time) * 1	    
-
-	    /*
-	    scene.children[2].geometry.attributes.position.setX(i,  (d+1) * pX[i]  * (Tone.dbToGain(an1.getValue()[i%32] ) * 200)* 10) 
-	    scene.children[2].geometry.attributes.position.setY(i,  (d+1) * pY[i]  * (Tone.dbToGain(an2.getValue()[i%32] ) * 400)*10) ;
-	    scene.children[2].geometry.attributes.position.setZ(i,  (d+1) * pZ[i]  * (Tone.dbToGain(an3.getValue()[i%32] ) * 400)*10) ;
-
-*/
+	    
 	    scene.children[2].geometry.attributes.position.setX(i,  (d+1) * pX[i] ) 
 	    scene.children[2].geometry.attributes.position.setY(i,  (d+1) * pY[i] ) ;
 	    scene.children[2].geometry.attributes.position.setZ(i,  (d+1) * pZ[i] ) ;
-
+	    
 	    
 	}
 	
@@ -412,12 +385,9 @@ function render() {
 	//camera.position.y = Math.cos( time * 0.25 ) * 10; 
 	// camera.position.z = Math.cos( time * 0.25 ) * - 10;     
 	
-	camera.position.x += ( mouseX - camera.position.x ) * .25 * Math.cos( 0.25 );
-	camera.position.y += ( - mouseY - camera.position.y ) * .25;
+	//camera.position.x += ( mouseX - camera.position.x ) * .25 * Math.cos( 0.25 );
+	// camera.position.y += ( - mouseY - camera.position.y ) * .25;
 	
-    
-
-    
      //camera.rotation.y = Math.cos( time * 0.125 ) *
     camera.lookAt( 0, 0, 16 );
     renderer.render( scene, camera );
