@@ -19,8 +19,6 @@ document.querySelector('button').addEventListener('click', async () => {
 })
 */
 
-// init();
-
 let camera, scene, renderer;
 let light, light2;
 
@@ -33,7 +31,7 @@ let mouseY = 0;
 let windowHalfX = window.innerWidth / 2;
 let windowHalfY = window.innerHeight / 2;
 
-Tone.start().then( (x) => init() );
+// Tone.start().then( (x) => init() );
 
 document.addEventListener( 'mousemove', onDocumentMouseMove );
 
@@ -74,11 +72,11 @@ let prueba2 = false;
 // init();
 
 an1 = new Tone.Analyser('fft', 32 ); 
-an1.smoothing = 0.8; 
+an1.smoothing = 0.9; 
 an2 = new Tone.Analyser('fft', 32 ); 
-an2.smoothing = 0.99; 
+an2.smoothing = 0.9; 
 an3 = new Tone.Analyser('fft', 32 ); 
-an3.smoothing = 0.99; 
+an3.smoothing = 0.9; 
 
 /*
   mic = new Tone.UserMedia(); // Tendrá que ver con el volumen ? 
@@ -88,20 +86,17 @@ an3.smoothing = 0.99;
     });
 */ 
 
+/*
 fuentes = new Tone.Players({
     "0": "audio/cello.wav",
     "1": "audio/wpa1.wav",
     "2": "audio/wpa2.wav"
 }).toDestination();
+*/
 
-fuentes.player('0').connect( an1 ); 
-fuentes.player('1').connect( an2 ); 
-fuentes.player('2').connect( an3 ); 
-
-fuentes.volume.value = -6; 
+// console.log(fuentes, "fuentes ajuaaa" ); 
 let clonadx;
 
-let meshes = []; 
 let coloresMesh; 
 
 let detection; 
@@ -109,22 +104,79 @@ let contMesh = 0;
 
 let fondo = false; 
 
-function init(){
-    
-    let loader = new GLTFLoader();
-    var dracoLoader = new DRACOLoader();
-    dracoLoader.setDecoderPath( '/js/draco/' );
-    loader.setDRACOLoader( dracoLoader );
+let promesaToda;
 
-    for(let i = 1; i < 5323; i = i + 20  ){
-	loader.load(
-	    'glTF_Meshes/'+i+'.gltf', 
-	    function ( gltf ) {
-		meshes[contAnim] = gltf.scene.children[0];
-		contAnim++;
-	    })	
+let loader = new GLTFLoader();
+var dracoLoader = new DRACOLoader();
+dracoLoader.setDecoderPath( '/js/draco/' );
+loader.setDRACOLoader( dracoLoader );
+
+let meshes = []; 
+let arrayPromesas = []; 
+
+scene = new THREE.Scene();
+
+Tone.start().then(function(){
+
+    for(let i = 1; i < 5323; i = i + 10  ){
+	arrayPromesas.push( new Promise (function (res, rej){
+	    loader.load(
+		'glTF_Meshes/'+i+'.gltf', 
+		function ( gltf ) {
+		    res(gltf.scene.children[0]);
+		    // meshes[contAnim] = gltf.scene.children[0];
+		    // contAnim++;
+		})
+	}))
     }
+    
+    let promesaMeshes = Promise.all(arrayPromesas );
+    
+    let promesaAudio = new Promise(function(res, rej){
+	
+	let fuentes;
+	
+	fuentes = new Tone.Players({
+	    "0": "audio/cello.wav",
+	    "1": "audio/wpa1.wav",
+	    "2": "audio/wpa2.wav"
+	}, function(){
+	    fuentes.toDestination();
+	    fuentes.volume.value = -6; 
+	    fuentes.player('0').connect( an1 ); 
+	    fuentes.player('1').connect( an2 ); 
+	    fuentes.player('2').connect( an3 ); 
+	    res(fuentes); 
+	})  
+    })
+    
+    let promesaGeneral = Promise.all([promesaMeshes, promesaAudio]);
+    
+    promesaGeneral.then(function(objetos){
+	
+	objetos[1].player('0').start();
+	objetos[1].player('1').start();
+	objetos[1].player('2').start();
+	
+	setTimeout(() => {
+	    meshes = objetos[0]; 
+	    // console.log(meshes); 
+	    scene.add(meshes[0]); // children 0  
+	    clonadx = meshes[0].clone();
+	    //Tone.Transport.start();
+	    // loopOf.start(0);
+	    // console.log(scene);
 
+	    init();
+	    gltfBool= true; // hasta que se cargue 
+	  
+	}, 8239);	
+    })
+    
+})
+
+function init(){
+        
     loader.load(
 	 'cap/2022-03-22--20-32-39.gltf',
 	//  'cap/0000000.gltf',
@@ -136,10 +188,8 @@ function init(){
 	    // console.log(obj.children.length );
 	})
 
-    console.log(coloresMesh); 
-    
     gamepads = navigator.getGamepads ? navigator.getGamepads() : (navigator.webkitGetGamepads ? navigator.webkitGetGamepads() : []);
-        
+    
     document.body.style.cursor = 'none'; 
     const overlay = document.getElementById( 'overlay' );
     overlay.remove();
@@ -155,29 +205,20 @@ function init(){
     camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 0.25, 1000 );
     camera.position.set( 0, 0, -4 );
     
-    scene = new THREE.Scene();
     // scene.background = new THREE.Color(0xffffff); 
 
-    light = new THREE.PointLight( 0xffffff, 0.25 );
+    light = new THREE.PointLight( 0xffffff, 1 );
     light.position.set( 0, 0, -2 );
-    scene.add( light );
+    scene.add( light ); // children 1
     
-    light2 = new THREE.PointLight( 0xffffff, 0.25 );
+    light2 = new THREE.PointLight( 0xffffff, 1 );
     light2.position.set( 0, 0, -2 );
-    scene.add( light2 );
+    scene.add( light2 ); // children 2
     
     if(gamepads){
 	console.log("hay gamepads"); 
     }
-    	        
-    /*
-    mic = new Tone.UserMedia(); // Tendrá que ver con el volumen ? 
     
-    mic.open().then(() => {
-	mic.connect( an1 ); 
-    });
-    */ 
-
     part();
     
     // 523 
@@ -185,7 +226,8 @@ function init(){
     // let contMesh = 0; 
 
     /*
-    loopOf = new Tone.Loop((time) => {
+    
+      loopOf = new Tone.Loop((time) => {
 
 	if(contMesh == meshes.length){
 	    contMesh = 0;
@@ -207,7 +249,7 @@ function init(){
     }, "0.77");
     */
     
-    objeto(); 
+    // objeto(); 
 
     renderer = new THREE.WebGLRenderer( { antialias: true } );
     renderer.setPixelRatio( window.devicePixelRatio );
@@ -231,6 +273,7 @@ function onWindowResize() {
     renderer.setSize( window.innerWidth, window.innerHeight );
 }
 
+/*
 async function objeto (){
     await sonido(); 
 }
@@ -246,14 +289,18 @@ function sonido(){
 	}, 10000);
 
     });
-}
+    }
+
+*/
+
+/*
 
 async function dosTres(){
     await ochoSegundos(); 
 }
 
 function ochoSegundos(){
-       return new Promise(resolve => {
+    return new Promise(resolve => {
 	setTimeout(() => {
 	    console.log(meshes); 
 	    scene.add(meshes[0]);
@@ -266,6 +313,8 @@ function ochoSegundos(){
     });
 }
 
+*/
+
 function animate(){
     requestAnimationFrame ( animate );
     render();
@@ -273,24 +322,30 @@ function animate(){
 
 function render() {
 
-    // console.log(scene.children[3]); 
-    var pads = navigator.getGamepads();
-    
-    if(pads[0]){
-	// console.log(pads[1].axes[0]);
-	camera.position.x += ( (pads[0].axes[0]*50) - camera.position.x ) * .25 * Math.cos( 0.25 );
-	camera.position.y += ( - (pads[0].axes[1]*50) - camera.position.y ) * .25;
-	camera.position.z +=  ( (pads[0].axes[3]*20) - camera.position.z ) * .25 * Math.cos( 0.25 );
-	
-	if( pads[0].buttons[7].pressed){
+    var time2 = Date.now() * 0.0005;
 
-	    if(contMesh == meshes.length){
+    // promesaToda.then(function(meshes){
+
+    var pads = navigator.getGamepads();
+
+    if(pads[1]){
+
+	// console.log(pads[1].axes[0]);
+	
+	camera.position.x += ( (pads[1].axes[0]*50) - camera.position.x ) * .25 * Math.cos( 0.25 );
+	camera.position.y += ( - (pads[1].axes[1]*50) - camera.position.y ) * .25;
+	camera.position.z +=  ( (pads[1].axes[3]*20) - camera.position.z ) * .25 * Math.cos( 0.25 );
+	
+	if( pads[1].buttons[7].pressed ){
+
+	    if( contMesh == meshes.length ){
 		contMesh = 0;
 		console.log("reseteo");
-		loopOf.stop(); 
+		// loopOf.stop(); 
 	    }
-
+	    
 	    // console.log("holaaaaa");
+
 	    scene.remove(meshes[contMesh]); 
 	    contMesh++;
 	    meshes[contMesh].scale.x = 16;
@@ -298,12 +353,12 @@ function render() {
 	    meshes[contMesh].scale.z = 16;
 	    meshes[contMesh].rotation.y = Math.PI;
 	    meshes[contMesh].material.roughness = 0.2; 
-	    meshes[contMesh].material.metalness = 0.8; 	
-	    clonadx = meshes[contMesh].clone(); 
+	    meshes[contMesh].material.metalness = 0.2; 	
+	    // clonadx = meshes[contMesh].clone(); 
 	    scene.add(meshes[contMesh]);    
 	}
 
-	if( pads[0].buttons[6].pressed ) {
+	if( pads[1].buttons[6].pressed ) {
 	    fondo = !fondo;
 	    if(fondo){
 		scene.background = new THREE.Color(0xffffff); 
@@ -326,57 +381,57 @@ function render() {
 		meshpZ[i] = clonadx.geometry.attributes.position.getZ(i);
 	    }
 
-	scene.children[2].geometry.attributes.color.needsUpdate = true;
+	scene.children[3].geometry.attributes.color.needsUpdate = true;
 
-	for(let i = 0; i < scene.children[2].geometry.attributes.color.count; i++){
+	for(let i = 0; i < scene.children[3].geometry.attributes.color.count; i++){
 		
-		scene.children[2].geometry.attributes.color.setXYZ(i,
-								  coloresMesh.children[0].geometry.attributes.color.getX(i),
-								  coloresMesh.children[0].geometry.attributes.color.getY(i),
-								  coloresMesh.children[0].geometry.attributes.color.getZ(i));   		    
+		scene.children[3].geometry.attributes.color.setXYZ(i,
+								  coloresMesh.children[1].geometry.attributes.color.getX(i),
+								  coloresMesh.children[1].geometry.attributes.color.getY(i),
+								  coloresMesh.children[1].geometry.attributes.color.getZ(i));   		    
 
 	}  
 
 	/////////////// MESH 
-	
+
 	const time = Date.now() * 0.0005;
 	const delta = clock.getDelta();
 	
 	let perlin = new ImprovedNoise();
  
-	scene.children[3].geometry.computeVertexNormals(); 
+	scene.children[0].geometry.computeVertexNormals(); 
 	// let perlin = new ImprovedNoise();
  
-	for( var i = 0; i < scene.children[3].geometry.attributes.position.count; i++){
-	    let d = perlin.noise(scene.children[3].geometry.attributes.position.getX(i)*2+time,
-				 scene.children[3].geometry.attributes.position.getY(i)*2+time,
-				 scene.children[3].geometry.attributes.position.getZ(i)*2+time ) * 0.1
+	for( var i = 0; i < scene.children[0].geometry.attributes.position.count; i++){
+	    let d = perlin.noise(scene.children[0].geometry.attributes.position.getX(i)*2+time,
+				 scene.children[0].geometry.attributes.position.getY(i)*2+time,
+				 scene.children[0].geometry.attributes.position.getZ(i)*2+time ) * 0.025
 	    
-	    scene.children[3].geometry.attributes.position.setX(i, meshpX[i] * (d+1));
-	    scene.children[3].geometry.attributes.position.setY(i, meshpY[i] * (d+1));
-	    scene.children[3].geometry.attributes.position.setZ(i, meshpZ[i] * (d+1));
+	    scene.children[0].geometry.attributes.position.setX(i, meshpX[i] * (d+1));
+	    scene.children[0].geometry.attributes.position.setY(i, meshpY[i] * (d+1));
+	    scene.children[0].geometry.attributes.position.setZ(i, meshpZ[i] * (d+1));
 
 	}
     
-	scene.children[3].geometry.attributes.position.needsUpdate = true;
-    	scene.children[3].geometry.computeVertexNormals(); 
+	scene.children[0].geometry.attributes.position.needsUpdate = true;
+    	scene.children[0].geometry.computeVertexNormals(); 
 
 	////////////////// PARTICULAS 
 	
-	for( var i = 0; i < scene.children[2].geometry.attributes.position.count; i++){
+	for( var i = 0; i < scene.children[3].geometry.attributes.position.count; i++){
 	   	    
-	    let d = perlin.noise(scene.children[2].geometry.attributes.position.getX(i)*(Tone.dbToGain(an1.getValue()[i%32] )*5000)+time,
-				 scene.children[2].geometry.attributes.position.getY(i)*(Tone.dbToGain(an2.getValue()[i%32] )*5000)+time,
-				 scene.children[2].geometry.attributes.position.getZ(i)*(Tone.dbToGain(an3.getValue()[i%32] )*5000)+time) * 1	    
+	    let d = perlin.noise(scene.children[3].geometry.attributes.position.getX(i)*(Tone.dbToGain(an1.getValue()[i%32] )*700)+time,
+				 scene.children[3].geometry.attributes.position.getY(i)*(Tone.dbToGain(an2.getValue()[i%32] )*700)+time,
+				 scene.children[3].geometry.attributes.position.getZ(i)*(Tone.dbToGain(an3.getValue()[i%32] )*700)+time) * 1	    
 	    
-	    scene.children[2].geometry.attributes.position.setX(i,  (d+1) * pX[i] ) 
-	    scene.children[2].geometry.attributes.position.setY(i,  (d+1) * pY[i] ) ;
-	    scene.children[2].geometry.attributes.position.setZ(i,  (d+1) * pZ[i] ) ;
+	    scene.children[3].geometry.attributes.position.setX(i,  (d+1) * pX[i] ) 
+	    scene.children[3].geometry.attributes.position.setY(i,  (d+1) * pY[i] ) ;
+	    scene.children[3].geometry.attributes.position.setZ(i,  (d+1) * pZ[i] ) ;
 	    
 	    
 	}
 	
-	scene.children[2].geometry.attributes.position.needsUpdate = true;
+	scene.children[3].geometry.attributes.position.needsUpdate = true;
     }
 
 	//camera.position.x = Math.sin( time * 0.25 ) * ( 75 + Math.sin( time * 0.5 )* 10); 
