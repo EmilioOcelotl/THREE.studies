@@ -4,6 +4,9 @@ import { OrbitControls } from './jsm/controls/OrbitControls.js';
 import { GLTFLoader } from './jsm/loaders/GLTFLoader.js';
 import { DRACOLoader } from './jsm/loaders/DRACOLoader.js';
 import { ImprovedNoise } from './jsm/math/ImprovedNoise.js'; 
+import { EffectComposer } from './jsm/postprocessing/EffectComposer.js';
+import { RenderPass } from './jsm/postprocessing/RenderPass.js';
+import { UnrealBloomPass } from './jsm/postprocessing/UnrealBloomPass.js';
 
 /*
 const OSC = require('osc-js'); // pal osc 
@@ -67,6 +70,8 @@ var onsetdetector;
 let prueba = false; 
 let prueba2 = false; 
 
+let bloomPass, composer; 
+
 //onsetdetector = new MMLLOnsetDetector(); //default threshold 0.34
 //console.log(onsetdetector); 
 // init();
@@ -78,23 +83,6 @@ an2.smoothing = 0.9;
 an3 = new Tone.Analyser('fft', 32 ); 
 an3.smoothing = 0.9; 
 
-/*
-  mic = new Tone.UserMedia(); // Tendrá que ver con el volumen ? 
-  
-  mic.open().then(() => {
-  mic.connect( an1 ); 
-    });
-*/ 
-
-/*
-fuentes = new Tone.Players({
-    "0": "audio/cello.wav",
-    "1": "audio/wpa1.wav",
-    "2": "audio/wpa2.wav"
-}).toDestination();
-*/
-
-// console.log(fuentes, "fuentes ajuaaa" ); 
 let clonadx;
 
 let coloresMesh; 
@@ -179,13 +167,8 @@ function init(){
         
     loader.load(
 	 'cap/2022-03-22--20-32-39.gltf',
-	//  'cap/0000000.gltf',
-	//'cap/prueba.glb', 
 	function ( gltf ) {
-	    //fuente.position.set(0, 0, 40)
 	    coloresMesh = gltf.scene.children[0];
-	    // objeto(contAnim); 
-	    // console.log(obj.children.length );
 	})
 
     gamepads = navigator.getGamepads ? navigator.getGamepads() : (navigator.webkitGetGamepads ? navigator.webkitGetGamepads() : []);
@@ -221,36 +204,6 @@ function init(){
     
     part();
     
-    // 523 
-    
-    // let contMesh = 0; 
-
-    /*
-    
-      loopOf = new Tone.Loop((time) => {
-
-	if(contMesh == meshes.length){
-	    contMesh = 0;
-	    console.log("reseteo");
-	    loopOf.stop(); 
-	}
-
-	scene.remove(meshes[contMesh]); 
-	contMesh++;
-	meshes[contMesh].scale.x = 16;
-	meshes[contMesh].scale.y = 16;
-	meshes[contMesh].scale.z = 16;
-	meshes[contMesh].rotation.y = Math.PI;
-	meshes[contMesh].material.roughness = 0.2; 
-	meshes[contMesh].material.metalness = 0.2; 	
-	clonadx = meshes[contMesh].clone(); 
-	scene.add(meshes[contMesh]); 
-	
-    }, "0.77");
-    */
-    
-    // objeto(); 
-
     renderer = new THREE.WebGLRenderer( { antialias: true } );
     renderer.setPixelRatio( window.devicePixelRatio );
     renderer.setSize( window.innerWidth, window.innerHeight );
@@ -258,13 +211,29 @@ function init(){
     renderer.toneMappingExposure = 1;
     renderer.outputEncoding = THREE.sRGBEncoding;
     container.appendChild( renderer.domElement );
-   
+
+ 
+    const renderScene = new RenderPass( scene, camera );
+    
+    composer = new EffectComposer( renderer );
+    composer.addPass( renderScene );
+
+    bloomPass = new UnrealBloomPass( new THREE.Vector2( window.innerWidth, window.innerHeight ), 1.5, 0.4, 0.85 );
+
+    composer.addPass( bloomPass );
+
+    bloomPass.threshold = 0.1;
+    bloomPass.strength = 4;
+    bloomPass.radius = 0.8; 
+    renderer.toneMappingExposure = Math.pow( 1.5, 4.0 );
+    
     controls = new OrbitControls( camera, renderer.domElement );
     controls.target.set( 0, 0, 0 );
     controls.update();
     window.addEventListener( 'resize', onWindowResize );
     // oscSend(); 
     animate();
+    
 }
 
 function onWindowResize() {
@@ -272,48 +241,6 @@ function onWindowResize() {
     camera.updateProjectionMatrix();
     renderer.setSize( window.innerWidth, window.innerHeight );
 }
-
-/*
-async function objeto (){
-    await sonido(); 
-}
-
-function sonido(){
-
-    return new Promise(resolve => {
-	setTimeout(() => {
-	    dosTres(); 
-	    fuentes.player('0').start();
-	    fuentes.player('1').start();
-	    fuentes.player('2').start();
-	}, 10000);
-
-    });
-    }
-
-*/
-
-/*
-
-async function dosTres(){
-    await ochoSegundos(); 
-}
-
-function ochoSegundos(){
-    return new Promise(resolve => {
-	setTimeout(() => {
-	    console.log(meshes); 
-	    scene.add(meshes[0]);
-	    clonadx = meshes[contMesh].clone(); 
-	    //Tone.Transport.start();
-	    // loopOf.start(0);
-	    // console.log(scene);
-	    gltfBool= true; 
-	}, 8239);
-    });
-}
-
-*/
 
 function animate(){
     requestAnimationFrame ( animate );
@@ -434,16 +361,21 @@ function render() {
 	scene.children[3].geometry.attributes.position.needsUpdate = true;
     }
 
-	//camera.position.x = Math.sin( time * 0.25 ) * ( 75 + Math.sin( time * 0.5 )* 10); 
-	//camera.position.y = Math.cos( time * 0.25 ) * 10; 
-	// camera.position.z = Math.cos( time * 0.25 ) * - 10;     
-	
-	//camera.position.x += ( mouseX - camera.position.x ) * .25 * Math.cos( 0.25 );
-	// camera.position.y += ( - mouseY - camera.position.y ) * .25;
+    //camera.position.x = Math.sin( time * 0.25 ) * ( 75 + Math.sin( time * 0.5 )* 10); 
+    //camera.position.y = Math.cos( time * 0.25 ) * 10; 
+    // camera.position.z = Math.cos( time * 0.25 ) * - 10;     
+    
+    //camera.position.x += ( mouseX - camera.position.x ) * .25 * Math.cos( 0.25 );
+    // camera.position.y += ( - mouseY - camera.position.y ) * .25;
 	
      //camera.rotation.y = Math.cos( time * 0.125 ) *
+
     camera.lookAt( 0, 0, 16 );
-    renderer.render( scene, camera );
+
+    composer.render();
+   
+    // renderer.render( scene, camera );
+   
 }   
 
 function onDocumentMouseMove( event ) {
@@ -453,7 +385,7 @@ function onDocumentMouseMove( event ) {
 
 function part(){
 
-    for( var i = 0; i < 6000; i++){
+    for( var i = 0; i < 8000; i++){
 
 	var posX, posY, posZ;
 	
