@@ -188,7 +188,7 @@ function init(){
     camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 0.25, 1000 );
     camera.position.set( 0, 0, -4 );
     
-    // scene.background = new THREE.Color(0xffffff); 
+    //scene.background = new THREE.Color(0xffffff); 
 
     light = new THREE.PointLight( 0xffffff, 1 );
     light.position.set( 0, 0, -2 );
@@ -270,8 +270,6 @@ function render() {
 		console.log("reseteo");
 		// loopOf.stop(); 
 	    }
-	    
-	    // console.log("holaaaaa");
 
 	    scene.remove(meshes[contMesh]); 
 	    contMesh++;
@@ -300,13 +298,14 @@ function render() {
     
     if(gltfBool){
 
-	
 	aButton = true; 
-    	for(let i = 0; i < scene.children[3].geometry.attributes.position.count; i++){
+
+	for(let i = 0; i < scene.children[3].geometry.attributes.position.count; i++){
 		meshpX[i] = clonadx.geometry.attributes.position.getX(i);
 		meshpY[i] = clonadx.geometry.attributes.position.getY(i);
 		meshpZ[i] = clonadx.geometry.attributes.position.getZ(i);
 	    }
+
 
 	scene.children[3].geometry.attributes.color.needsUpdate = true;
 
@@ -317,7 +316,8 @@ function render() {
 								  coloresMesh.children[1].geometry.attributes.color.getY(i),
 								  coloresMesh.children[1].geometry.attributes.color.getZ(i));   		    
 
-	}  
+								  }
+
 
 	/////////////// MESH 
 
@@ -344,22 +344,28 @@ function render() {
     	scene.children[0].geometry.computeVertexNormals(); 
 
 	////////////////// PARTICULAS 
-	
+
+	/*
 	for( var i = 0; i < scene.children[3].geometry.attributes.position.count; i++){
-	   	    
-	    let d = perlin.noise(scene.children[3].geometry.attributes.position.getX(i)*(Tone.dbToGain(an1.getValue()[i%32] )*700)+time,
-				 scene.children[3].geometry.attributes.position.getY(i)*(Tone.dbToGain(an2.getValue()[i%32] )*700)+time,
-				 scene.children[3].geometry.attributes.position.getZ(i)*(Tone.dbToGain(an3.getValue()[i%32] )*700)+time) * 1	    
+
+   	    
+	    let d = perlin.noise(scene.children[3].geometry.attributes.position.getX(i)*(Tone.dbToGain(an1.getValue()[i%32] )*100)+time,
+				 scene.children[3].geometry.attributes.position.getY(i)*(Tone.dbToGain(an2.getValue()[i%32] )*100)+time,
+				 scene.children[3].geometry.attributes.position.getZ(i)*(Tone.dbToGain(an3.getValue()[i%32] )*100)+time) * 1	    
+	    
 	    
 	    scene.children[3].geometry.attributes.position.setX(i,  (d+1) * pX[i] ) 
 	    scene.children[3].geometry.attributes.position.setY(i,  (d+1) * pY[i] ) ;
 	    scene.children[3].geometry.attributes.position.setZ(i,  (d+1) * pZ[i] ) ;
+	        
 	    
-	    
-	}
+	    }
+	*/
 	
 	scene.children[3].geometry.attributes.position.needsUpdate = true;
+	
     }
+
 
     //camera.position.x = Math.sin( time * 0.25 ) * ( 75 + Math.sin( time * 0.5 )* 10); 
     //camera.position.y = Math.cos( time * 0.25 ) * 10; 
@@ -385,18 +391,28 @@ function onDocumentMouseMove( event ) {
 
 function part(){
 
-    for( var i = 0; i < 8000; i++){
+    for( var i = 0; i < 150; i++){
+	for( var j = 0; j < 150; j++){
 
 	var posX, posY, posZ;
-	
+
+	/*
 	var theta1 = Math.random() * (Math.PI*2);
 	var theta2 = Math.random() * (Math.PI*2); 
 	
 	posX = Math.cos(theta1) * Math.cos(theta2);
 	posY = Math.sin(theta1);
 	posZ = Math.cos(theta1) * Math.sin(theta2);
-	
-	let radio =24; 
+	*/
+
+	    var mapi = THREE.Math.mapLinear(i, 0, 150, -3, 3); 
+	    var mapj = THREE.Math.mapLinear(j, 0, 150, -6, 6); 
+
+	    posX = mapj * Math.cos(mapi) ;
+	    posY = mapj * Math.sin(mapi) ;
+	    posZ = mapi * Math.cos(mapj) ;  
+	    
+	let radio =50; 
 	
 	pX[i] = posX * radio ; 
 	pY[i] = posY * radio ;
@@ -405,6 +421,7 @@ function part(){
 	vertices.push(posX * radio, posY*radio, posZ*radio);
 	colores.push( 255, 255, 255 ); 
 	    
+	}
     }
 
     pGeo = new THREE.BufferGeometry();
@@ -416,9 +433,9 @@ function part(){
     pointsPart.position.z = 16; 
     scene.add( pointsPart );
 
+    }
     
     
-}
 
 
 /*

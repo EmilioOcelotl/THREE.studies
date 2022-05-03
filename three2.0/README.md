@@ -1,6 +1,8 @@
 
 # THREE2.0
 
+- Otra cosa que no sea una figura esférica ( probar con formas locas ) 
+
 - Objetivo final: una pieza que aproveche las posibilidades de la co-presencia pero que no olvide el intercambio distanciado característico de la pandemia
 - Una grabación sintética que pueda conducir la dinámica de la pieza > posible visualizar esto como una "partitura" ( análisis y visualización ) 
 - De manera independiente: sintetizadores listos para actuar
