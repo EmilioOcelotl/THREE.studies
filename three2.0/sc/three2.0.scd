@@ -101,7 +101,7 @@ c = { arg src, chan, num, val;
 	// Local Rec
 	if(num == 64 && val == 127, {
 		e.free;
-		e =  Buffer.alloc(s, 44100*20, 1);
+		e =  Buffer.alloc(s, 44100*10, 1);
 		~rec1 = {arg run = 1; RecordBuf.ar(SoundIn.ar(0), e, doneAction:0, loop:0)};
 		// ~rec1 = {arg run = 1; RecordBuf.ar(~post, e, doneAction:0, loop:0)};
 
@@ -135,6 +135,8 @@ c = { arg src, chan, num, val;
 };
 
 MIDIIn.addFuncTo(\control, c);
+
+)
 
 ///////////// 4. Post //////////////////
 s.prepareForRecord("/home/emi/Música/three2.0/procesados/celloProc.wav");
