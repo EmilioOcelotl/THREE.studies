@@ -1,5 +1,7 @@
 
-// se ve muy raro hydra como textura
+///////////////////////////////////////////////////
+// Disclaimer, cámara y velocidad de cubos 
+///////////////////////////////////////////////////
 
 import * as Tone from 'tone';
 import * as THREE from 'three';
@@ -63,7 +65,6 @@ var hydra = new Hydra({
 }) // antes tenía .synth aqui 
 
 solid().color(0, 0, 0).out(o0);
-
     
 const elCanvas = document.getElementById( 'myCanvas');
 elCanvas.style.display = 'none';     
@@ -77,7 +78,7 @@ let vertices = [];
 let boolMesh = true; 
 let meshFinal; 
 let rocas;
-let velocidadCubos = 1; 
+let velocidadCubos = 0; 
 let velocidadEnt = 1; 
 let material; 
 
@@ -86,12 +87,11 @@ function init(){
     container = document.getElementById( 'container' );
     
     scene = new THREE.Scene();
-    camera = new THREE.PerspectiveCamera( 75, container.offsetWidth / container.offsetHeight, 0.1, 2000 );
+    camera = new THREE.PerspectiveCamera( 75, container.offsetWidth / container.offsetHeight, 0.1, 3000 );
 
     // scene.fog = new THREE.Fog(0x000000, 10, 960);
 
     retro();
-
     audio(); 
     scene.background = new THREE.Color( 0x000000 ); 
     
@@ -129,10 +129,12 @@ function init(){
 	
     }
 
-    // const geometryP = new THREE.PlaneGeometry( 16*2, 9*2 );
-    // const materialP = new THREE.MeshBasicMaterial( {color: 0xffffff, side: THREE.DoubleSide, map: vit2 } );
-    // const plane = new THREE.Mesh( geometryP, materialP );
-    // scene.add( plane );
+    const textfoto = new THREE.TextureLoader().load( "img/fotosensibilidad.png" );
+
+    const geometryP = new THREE.PlaneGeometry( 9*2, 9*2 );
+    const materialP = new THREE.MeshBasicMaterial( {color: 0xffffff, side: THREE.DoubleSide, map: textfoto } );
+    const plane = new THREE.Mesh( geometryP, materialP );
+    scene.add( plane );
 
     materialC2 = new THREE.MeshBasicMaterial( {
 	map: vit,
@@ -150,7 +152,7 @@ function init(){
     const sphGeom = new THREE.SphereGeometry( 20, 64, 64 );
     sph = new THREE.Mesh(sphGeom, materialC2); 
     
-    audioSphere = new THREE.SphereGeometry( 1000, 64, 64 );
+    audioSphere = new THREE.SphereGeometry( 1400, 64, 64 );
     // audioSphere = new THREE.CylinderGeometry( 500, 500, 500, 6 );
     // audioSphere = new THREE.BoxGeometry( 1500, 1500, 1500, 32, 32, 32 )
     audioSphere.usage = THREE.DynamicDrawUsage;
@@ -174,22 +176,22 @@ function init(){
 	//map: texture
     } );
     
-    const pilargeom = new THREE.BoxGeometry(2, 2000, 2 );
+    const pilargeom = new THREE.BoxGeometry(3, 2000, 3 );
 
     let loc = 0;
      for(let k=0; k<16;k++){
-	for(let i=1;i<16;i++){
+	for(let i=0;i<16;i++){
 
 	    bamboo[loc] = new THREE.Mesh(pilargeom, pilaresMaterial )
 	    // bamboo[loc].rotation.set((Math.random()- 1 )/2, 0, (Math.random()-1)/2)
 	    bamboo[loc].rotation.set((Math.random()- 0.5 )/2, 0, (Math.random()-0.5)/2)
 
 	    let ang = (k * 10 + ((i+1)%3)* 3 + i) * 2 * Math.PI/100
-	    let r1 = 22 + 156*i
-	    let r2 = 21 + 152*i
+	    let r1 = 22 + 106*i
+	    let r2 = 21 + 102*i
 	    
 	    bamboo[loc].position.set(r1 * Math.sin(ang), 10, r2 *Math.cos(ang) )
-	    bamboo[loc].scale.y = Math.random() * 1000+ 10; 
+	    bamboo[loc].scale.y = Math.random() * 100+ 10; 
 	    // scene.add(bamboo[loc])
 	    loc++; 
 	}
@@ -197,68 +199,6 @@ function init(){
     
     camera.position.z = 10;
 
-    /*
-    const loader = new OBJLoader();
-
-    loader.load(
-	'3d/objeto.obj',
-	function ( object ) {
-	    console.log(object.children[0]); 
-	    obj = object.children[0];
-	    obj.material = materialC2;
-	    // obj.geometry = THREE.BufferGeometryUtils.mergeVertices(obj.geometry);
-	    obj.geometry.computeVertexNormals(true); 
-	    scene.add( obj );
-	}
-	);
-    */
-
-    /*
-    let vertices = [];
-    let normales = []; 
-    const cantidad = 1000;
-    
-    for(let i = 0; i < cantidad; i++){
-	for(let j = 0; j < cantidad; j++){
-
-	    let lat = THREE.MathUtils.mapLinear(i, 0, cantidad,  -Math.PI, Math.PI);
-	    let lon = THREE.MathUtils.mapLinear(j, 0, cantidad, -Math.PI, Math.PI);
-	    
-	    //let x = 1.5 * Math.cos(lat) * (1.5 + Math.sin(lon) * Math.cos(lat) - Math.sin(2*lon) * Math.sin(lat) / 2);
-            //let y = 1.5 * Math.sin(lat) * (1.5 + Math.sin(lon) * Math.cos(lat) - Math.sin(2*lon) * Math.sin(lat) / 2) ;
-            //let z = 1.5 * Math.sin(lat) * Math.sin(lon) + Math.cos(lat) * Math.sin(2*lon) / 2 ;
-	    
-
-	    let x =  2 * Math.cos(lat) * Math.cos(lon);
-	    let y =  2 * Math.sin(lat) * Math.cos(lon);
-	    let z =  2 * Math.sin(lon) + 1*lat;  
-	    
-	    vertices.push(x, y, z);
-	   
-	}
-    }
-
-    const geometry2 = new THREE.PlaneGeometry( 5, 5, cantidad, cantidad);
-
-    meshFinal = new THREE.Mesh(geometry2, material );
-    meshFinal.scale.x = 16; 
-    meshFinal.scale.y = 16; 
-    meshFinal.scale.z = 16; 
-     
-    geometry2.attributes.position.needsUpdate = true;
-    // geometry2.computeVertexNormals(); 
-
-    for(let i = 0; i < geometry2.attributes.position.count; i++){
-	geometry2.attributes.position.setX(i, vertices[i*3]);
-	geometry2.attributes.position.setY(i, vertices[i*3+1]); 
-	geometry2.attributes.position.setZ(i, vertices[i*3+2]); 
-    }
-
-*/
-
-    // console.log(vertices); 
-    // scene.add(meshFinal); 
-    
     renderer2 = new THREE.WebGLRenderer();
     renderer2.autoClear = false;
     renderer2.setPixelRatio( window.devicePixelRatio );
@@ -298,13 +238,15 @@ function init(){
     osc2.on('/switchHydra', message => {
 
 	// hydra.hush();
+
+	velocidadCubos = message.args[0]; 
 	
 	switch(  message.args[0] ) {
 	case 0:
-	    osc(() => osci, 0.1, 0 ) // osci
-		//.color(1.3, 0.9,1.2) 
+	    osc(() => osci, 0.1, () => colorHydra ) // osci
+		.color(1.3, 0.9,1.2) 
                 .kaleid(()=> kal) // kal
-		.diff(voronoi(voro, vorvel, 0) // voro, vorovel
+		.diff(voronoi(()=>voro, ()=>vorvel, 0) // voro, vorovel
 		      .color(0, 0, 0))
                 .rotate(ang, rotvel) // ang, rotvel 
                 .modulateScrollX(o0, () => (mod * 0.0003)) // mod (antes estaba solo modulate)  
@@ -313,8 +255,8 @@ function init(){
                 .out(o0)
 	    break;
 	case 1:
-	    osc(osci, 0.1, 0 ) // osci
-		//.color(1.3, 0.9,1.2) 
+	    osc(osci, 0.1, () => colorHydra ) // osci
+		.color(1.3, 0.9,1.2) 
                 .kaleid(kal) // kal
 		.diff(voronoi(voro, vorvel, 0) // voro, vorovel
 		      .color(0, 0, 0))
@@ -326,8 +268,8 @@ function init(){
 
 	    break;
 	case 2:
-	    osc(osci, 0.1, 0 ) // osci
-		//.color(1.3, 0.9,1.2) 
+	    osc(osci, 0.1, () => colorHydra ) // osci
+		.color(1.3, 0.9,1.2) 
                 .kaleid(kal) // kal
 		.diff(voronoi(voro, vorvel, 0) // voro, vorovel
 		      .color(0, 0, 0))
@@ -336,10 +278,29 @@ function init(){
                 .scale(scl, sclX, sclY) // scl, sclX, sclY
 		.saturate(sat) // sat
                 .out(o0)
-
+	    break;
+	case 3:
+	    osc(20, 0.01, () => colorHydra)
+		.color(1.3, 0.9, 1.2) 
+		.kaleid(20)
+		.rotate(1, 0.1)
+		.modulate(o0, () => mod * 0.0003)
+		.scale(0.99)
+		.saturate(sat) 
+  		.out(o0)
 	    break;
 	case 4:
-	    solid().out();
+	    voronoi(8,1)
+		.mult(osc(10,0.1,colorHydra)
+		.color(1.3, 0.9, 1.2))
+		.modulate(o0,0.5)
+		.add(o0,0.8)
+		.scrollY(-0.01)
+		.scale(0.99)
+		.modulate(voronoi(8,1),0.008)
+		.luma(()=>mod*0.0009)
+		.saturate(sat)
+		.out()
 	    break; 
 	    
 	}
@@ -384,6 +345,7 @@ function init(){
 
     osc2.on('/iniciar', message => {
 	// bloomPass.strength = message.args[0];
+	scene.remove(plane); 
 	if(message.args[0]){
 	    rocas.start();
 	}
@@ -497,10 +459,6 @@ function init(){
     osc2.on('/colorHydra', message => {
 	colorHydra = message.args[0]; 
     })
-
-    osc2.on('/velocidadCubos', message => {
-	velocidadCubos = message.args[0]; 
-    })
     
     score();
     animate();
@@ -511,39 +469,58 @@ function animate() {
     requestAnimationFrame( animate );
 
     var time2 = Date.now() * 0.005;
-    var time = Date.now() * 0.0005; // por aquí podría estar un parámetro de velocidad 
+
+    var time = Date.now() * 0.0005; // por aquí podría estar un parámetro de velocidad
+
+    /*
+    if(velocidadCubos == 0){
+	var time = Date.now() * 0.00005; // por aquí podría estar un parámetro de velocidad
+	 an.smoothing = 0.99
+    }
+
+
+    if(velocidadCubos == 1){
+	var time = Date.now() * 0.005; // por aquí podría estar un parámetro de velocidad
+	 an.smoothing = 0.8
+    }
+
+    
+    if(velocidadCubos == 2){
+	var time = Date.now() * 0.000005; // por aquí podría estar un parámetro de velocidad
+	 an.smoothing = 0.95
+	 }
+	 */
+
     let perlin = new ImprovedNoise();
 
     for( var i = 0; i < total; i++){
 	
-	let d = perlin.noise(pX[i]*1+time,
-			     pY[i]*1+time,
-			     pZ[i]*1+time ) *0.2
+	let d = perlin.noise(pX[i]*10+time,
+			     pY[i]*10+time,
+			     pZ[i]*10+time ) *1
 
-	cubos[i].position.x = (pX[i]*20)* (1+d) * ((Tone.dbToGain( an.getValue()[i%32])*50000) );
-	cubos[i].position.y = (pY[i]*20)* (1+d) * ((Tone.dbToGain( an.getValue()[i%32])*50000) );
-	cubos[i].position.z = (pZ[i]*20)* (1+d) * ((Tone.dbToGain( an.getValue()[i%32])*50000) );
-
+	cubos[i].position.x = (pX[i]*150)* (1+d) * ((Tone.dbToGain( an.getValue()[i%32])*100000) );
+	cubos[i].position.y = (pY[i]*50)* (4+d);
+	cubos[i].position.z = (pZ[i]*150)* (1+d) * ((Tone.dbToGain( an.getValue()[i%32])*100000) );
 	
-	cubos[i].scale.x = 3* (d*1)*1;
-	cubos[i].scale.y = 3* (d*1)*1;
-	cubos[i].scale.z = 3* (d*1)*1;
+	cubos[i].scale.x = 2* (d*1)* ((Tone.dbToGain( an.getValue()[i%32])*10000) );
+	cubos[i].scale.y = 1* (d*1)*1;
+	cubos[i].scale.z = 1* (d*1)*1;
 
-	cubos[i].rotation.x += 1*(d*1)*0.25;
-	cubos[i].rotation.y -= 1* (d*1)*0.25;
-	cubos[i].rotation.z += 1* (d*1)*0.25;
+	cubos[i].rotation.x += 1*(d*1)*0.25/4;
+	cubos[i].rotation.y -= 1* (d*1)*0.25/4;
+	cubos[i].rotation.z += 1* (d*1)* ((Tone.dbToGain( an.getValue()[i%32])*500) );
 	
-	// bamboo[i].scale.y = (1+d) * ((Tone.dbToGain( an.getValue()[i%32])*50000))
+	bamboo[i].scale.y = (1*d) * ((Tone.dbToGain( an.getValue()[i%32])*50000))
 	 
     }		
-				    
 
-   
+   /*
     for ( var i = 0; i < cuboGrande.geometry.attributes.position.count; i++){
 
-	let d = perlin.noise( cuboGrande.geometry.attributes.position.getX(i)*0.0001+time,
-			      cuboGrande.geometry.attributes.position.getY(i)*0.0001+time,
-			      cuboGrande.geometry.attributes.position.getZ(i)*0.0001+time ) * 1
+	let d = perlin.noise( cuboGrande.geometry.attributes.position.getX(i)*0.001+time,
+			      cuboGrande.geometry.attributes.position.getY(i)*0.001+time,
+			      cuboGrande.geometry.attributes.position.getZ(i)*0.001+time ) * 1
 
 	cuboGrande.geometry.attributes.position.setX(
 	    i, (cuboGrandeCopy.geometry.attributes.position.getX(i)) * (1+d)
@@ -559,14 +536,16 @@ function animate() {
 	
 	
 	}
-	
+   	
 
-    // cuboGrande.geometry.attributes.position.needsUpdate = true;
+    cuboGrande.geometry.attributes.position.needsUpdate = true;
 
-    
+    */
+    /*
     camera.position.x = Math.sin( time2 * 0.125/4 ) * ( 75 + Math.sin( time2 * 0.125 )* 4) * 1; 
     camera.position.y = Math.cos( time2 * 0.125/4 ) * 200; 
     camera.position.z = Math.cos( time2 * 0.125/4 ) * - 200;
+    */
     
     camera.lookAt(0, 0, 0);
    
@@ -621,11 +600,11 @@ function onWindowResize() {
 function retro() {
     // const data = new Uint8Array( textureSize * textureSize * 3 );
     texture = new THREE.FramebufferTexture( textureSize, textureSize, THREE.RGBAFormat );
-    texture.minFilter = THREE.NearestFilter;
-    texture.magFilter = THREE.NearestFilter;
+    //texture.minFilter = THREE.NearestFilter;
+    // texture.magFilter = THREE.NearestFilter;
     texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
     texture.offset.set( 0, 0 );
-    texture.repeat.set( 2, 2 );
+    texture.repeat.set( 2, 3 );
 }
 
 function retrorm(){
@@ -649,7 +628,7 @@ function retroadd(){
 function audio(){
     
     an = new Tone.Analyser('fft', 32 );
-    an.smoothing = 0.99
+    an.smoothing = 0.95
     const mic = new Tone.UserMedia().connect( an );
     mic.open();
 

@@ -35,7 +35,6 @@ const vertex = new THREE.Vector3();
 const color = new THREE.Color();
 
 const startButton = document.getElementById( 'startButton' );
-
 startButton.addEventListener( 'click', init );
 
 // init();

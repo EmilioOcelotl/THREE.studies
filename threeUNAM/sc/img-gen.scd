@@ -6,7 +6,7 @@ m = NetAddr("localhost", 41234);// local machine
 m.sendMsg("/iniciar", 1);
 
 m.sendMsg("/switchHydra",0);
-m.sendMsg("/cubos", 1);
+m.sendMsg("/cubos", 0);
 // m.sendMsg("/bloom", 1);
 m.sendMsg("/sph", 0);
 m.sendMsg("/retroB", 1);
@@ -26,8 +26,9 @@ m.sendMsg("/scl", 0.45);
 m.sendMsg("/sclX", 1.05);
 m.sendMsg("/sclY", 0.95);
 m.sendMsg("/sat", 1);
-m.sendMsg("/bamboo", 1);
-m.sendMsg("/colorHydra", -1);
+m.sendMsg("/bamboo", 0);
+m.sendMsg("/colorHydra", 0.25);
+m.sendMsg("/velocidadCubos", 2);
 
 m.sendMsg("/meshFinal", 1);
 
