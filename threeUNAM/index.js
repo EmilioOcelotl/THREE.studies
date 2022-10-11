@@ -1,8 +1,3 @@
-
-///////////////////////////////////////////////////
-// Disclaimer, cámara y velocidad de cubos 
-///////////////////////////////////////////////////
-
 import * as Tone from 'tone';
 import * as THREE from 'three';
 import { OrbitControls } from './jsm/controls/OrbitControls.js';
@@ -51,8 +46,6 @@ let bamboo = [];
 let cubos = [];
 
 let pX = [], pY = [], pZ = []; 
-
-// let mX = 1000, mY = 10; 
 
 let osci=10, kal=5, voro=5, vorvel=0.5, ang=10, rotvel=0.1, mod=1000, scl = 0.49, sclX = 1.05, sclY = 0.95, sat = 1, colorHydra = 0.1;  
 
@@ -134,7 +127,7 @@ function init(){
     const geometryP = new THREE.PlaneGeometry( 9*2, 9*2 );
     const materialP = new THREE.MeshBasicMaterial( {color: 0xffffff, side: THREE.DoubleSide, map: textfoto } );
     const plane = new THREE.Mesh( geometryP, materialP );
-    scene.add( plane );
+    // scene.add( plane );
 
     materialC2 = new THREE.MeshBasicMaterial( {
 	map: vit,
@@ -239,7 +232,7 @@ function init(){
 
 	// hydra.hush();
 
-	velocidadCubos = message.args[0]; 
+	velocidadCubos = message.args[0];
 	
 	switch(  message.args[0] ) {
 	case 0:
@@ -302,7 +295,87 @@ function init(){
 		.saturate(sat)
 		.out()
 	    break; 
-	    
+
+	case 5:
+	    voronoi(8,1)
+		.mult(osc(10,0.1,0.2))
+		.modulate(o0,0.5)
+		.add(o0,0.8)
+		.scrollY(-0.01)
+		.scale(0.99)
+		.modulate(voronoi(8,1),0.008)
+		.luma(()=>mX*0.0009) 
+		.out()
+	    break;
+	case 6:
+	    	    osc(5, 0.9, 0.00)
+		.kaleid([3,4,5,7,8,9,10].fast(0.1))
+		.rotate(0.009,()=>Math.sin(time)* -0.0001 )
+		.modulateRotate(o0,()=>Math.sin(time) * 0.0003)
+		.modulate(o0, ()=>mX*0.0009)
+	    //  .scale(()=>mouse.y*0.0009) //cambiar X
+		.scale(.99) //scala estática
+		.out(o0)
+	    break;
+	case 7:
+	    	    osc(5)
+		.modulate(noise(6),.22).diff(o0)
+		.modulateScrollY(osc(0.8).modulate(osc(10).modulate(osc(2,0.1),()=>mX*0.01).rotate(),.91))
+		.scale(.79)
+		.out()
+
+	    break;
+
+	case 8:
+	    osc(105).rotate(0.11, 0.1).modulate(osc(10).rotate(0.3).add(o0, 0.1)).add(osc(20,0.01,0)).out(o0)
+	    osc(50,0.005).diff(o0).modulate(o1,()=>mX*0.00009).out(o1)
+	    render(o1)
+	    break;
+	case 9:
+	    voronoi(350,0.15)
+		.modulateScale(osc(8).rotate(Math.sin(time)),.5)
+		.thresh(.8)
+		.modulateRotate(osc(7),.4)
+		.thresh(.7)
+		.diff(src(o0).scale(1.8))
+		.modulateScale(osc(2).modulateRotate(o0,.74))
+		.diff(src(o0).rotate([-.012,.01,-.002,0]).scrollY(0,[-1/199800,0].fast(0.7)))
+		.brightness([-.02,-.17].smooth().fast(.5))
+		.out()
+	    break;
+	case 10:
+	    shape(20,0.11,0.3)
+		.scale(.9)
+		.repeat(() => Math.sin(time)*100)
+		.modulateRotate(o0)
+		.scale(()=>mX*0.01)
+		.modulate(noise(10,2))
+		.rotate(1, .2)
+		.layer(o0,0.1)
+		.modulateScrollY(noise(3),-0.1)
+		.scale(0.999)
+		.modulate(voronoi(1,1),0.08)
+		.out(o0)
+	    break;
+	case 11: 
+	    shape(8,0.5)
+		.scale(0.3,3)
+		.rotate(-1.3)
+		.scrollY(0,-0.3)
+		.repeat(2,2, ()=>Math.sin(time)*4,()=>Math.sin(time)*4)
+		.add(src(o0)
+   		     .scrollY(0.001),0.99)
+		.scale(1.01)
+		.layer(src(o0)
+     		       .mask(shape(3,() => Math.sin(time)*0.5+0.8,-0.001)
+           		     .rotate(0,2).scale(0.5,0.5))
+     		       .shift([0,-0.001].fast(0.1),0,[-0.001,0.001])
+		       .colorama([0.001,0.002,0.008,-0.009].fast(0.5))
+     		       .scrollY(-0.005))
+		.blend(o0,0.4)
+		.saturate([1,0.8])
+		.out()
+	    break; 
 	}
 	
 	console.log(message.args[0]); 
